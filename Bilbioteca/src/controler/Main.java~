@@ -17,7 +17,7 @@ public class Main {
      */
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
         Database db = new Database();
-	System.out.println("bla!");
+
         Aluno aluno           = new Aluno(db);
         Editora editora       = new Editora(db);
         Livro livro           = new Livro(db, editora);
