@@ -28,7 +28,6 @@ public class OpcoesLivros extends Padrao {
     private Livro livro;
     private Emprestimo emprestimo;
     private Editora editora;
-    
     private JTextField jtCod;
     private JTextField jtTitulo;
     private JTextField jtAutor;
@@ -36,17 +35,18 @@ public class OpcoesLivros extends Padrao {
     private JTextField jtEstante;
     private JTextField jtArea;
     private JComboBox jtEditora;
-    
     private JButton btnRemover;
     private JButton btnVoltar;
-    
     private JTable tabela;
     private JTabbedPane tabbedPane;
     private Boolean changed = false;
     private DefaultTableModel modelo = new DefaultTableModel() {
+
         @Override
         public boolean isCellEditable(int rowIndex, int mColIndex) {
-            if (mColIndex == 0) return false;
+            if (mColIndex == 0) {
+                return false;
+            }
             return true;
         }
     };
@@ -110,42 +110,42 @@ public class OpcoesLivros extends Padrao {
         JPanel panel0 = new JPanel();
         panel0.add(lbCod);
         panel0.add(jtCod);
-        panel0.setLayout(new GridLayout(2,1));
+        panel0.setLayout(new GridLayout(2, 1));
 
         JPanel panel1 = new JPanel();
         panel1.add(lbNome);
         panel1.add(jtTitulo);
-        panel1.setLayout(new GridLayout(2,1));
+        panel1.setLayout(new GridLayout(2, 1));
 
         JPanel panel2 = new JPanel();
         panel2.add(lbAutor);
         panel2.add(jtAutor);
-        panel2.setLayout(new GridLayout(2,1));
+        panel2.setLayout(new GridLayout(2, 1));
 
         JPanel panel4 = new JPanel();
         panel4.add(lbEditora);
         panel4.add(jtEditora);
-        panel4.setLayout(new GridLayout(2,1));
+        panel4.setLayout(new GridLayout(2, 1));
 
         JPanel panel3 = new JPanel();
         panel3.add(lbbox);
         panel3.add(jtBox);
-        panel3.setLayout(new GridLayout(2,1));
+        panel3.setLayout(new GridLayout(2, 1));
 
         JPanel panel5 = new JPanel();
         panel5.add(lbEstante);
         panel5.add(jtEstante);
-        panel5.setLayout(new GridLayout(2,1));
+        panel5.setLayout(new GridLayout(2, 1));
 
         JPanel panel6 = new JPanel();
         panel6.add(lbArea);
         panel6.add(jtArea);
-        panel6.setLayout(new GridLayout(2,1));
+        panel6.setLayout(new GridLayout(2, 1));
 
         JPanel panel7 = new JPanel();
         panel7.add(btnSalvar);
         panel7.add(btnVoltar);
-        panel7.setLayout(new GridLayout(1,2));
+        panel7.setLayout(new GridLayout(1, 2));
 
         panel.add(panel0);
         panel.add(panel1);
@@ -156,7 +156,7 @@ public class OpcoesLivros extends Padrao {
         panel.add(panel6);
         panel.add(panel7);
         panel.setLayout(new FlowLayout(FlowLayout.LEFT, 70, 10));
-   
+
         return panel;
     }
 
@@ -174,12 +174,12 @@ public class OpcoesLivros extends Padrao {
         modelo.addColumn("Área");
 
         preencheTabela();
-              
+
         JScrollPane scrollPane = new JScrollPane(tabela);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 
-        
+
         tabela.getColumnModel().getColumn(0).setPreferredWidth(100);
         tabela.getColumnModel().getColumn(0).getCellEditor();
         tabela.getColumnModel().getColumn(1).setPreferredWidth(100);
@@ -233,7 +233,7 @@ public class OpcoesLivros extends Padrao {
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
-         return null;
+        return null;
     }
 
     private class SalvarActionListener implements ActionListener {
@@ -247,22 +247,25 @@ public class OpcoesLivros extends Padrao {
             String edit = jtEditora.getSelectedItem().toString();
             String estante = jtEstante.getText();
             String area = jtArea.getText();
-            
-            if (!livro.selectCod(cod)) {
-                changed = false;
-                livro.insertLivro(cod, titulo, autor, box, edit, estante, area);
-                modelo.addRow(new String[]{cod, titulo, autor, box,edit, estante, area});
-                JOptionPane.showMessageDialog(frame, "Livro Salvo com Sucesso!!!", "Salvar", JOptionPane.INFORMATION_MESSAGE);
-                tabbedPane.setSelectedIndex(1);
-                jtCod.setText("");
-                jtEstante.setText("");
-                jtBox.setText("");
-                jtTitulo.setText("");
-                jtAutor.setText("");
-                jtArea.setText("");
+            if (!cod.isEmpty() && !titulo.isEmpty() && !autor.isEmpty() && !box.isEmpty() && !"--Escolha/Insira uma Editora--".equals(edit) && !estante.isEmpty() && !area.isEmpty()) {
+                if (!livro.selectCod(cod)) {
+                    changed = false;
+                    livro.insertLivro(cod, titulo, autor, box, edit, estante, area);
+                    modelo.addRow(new String[]{cod, titulo, autor, box, edit, estante, area});
+                    JOptionPane.showMessageDialog(frame, "Livro Salvo com Sucesso!!!", "Salvar", JOptionPane.INFORMATION_MESSAGE);
+                    tabbedPane.setSelectedIndex(1);
+                    jtCod.setText("");
+                    jtEstante.setText("");
+                    jtBox.setText("");
+                    jtTitulo.setText("");
+                    jtAutor.setText("");
+                    jtArea.setText("");
+                } else {
+                    changed = false;
+                    JOptionPane.showMessageDialog(frame, "Esse Código já Existe!", "Error", JOptionPane.ERROR_MESSAGE);
+                }
             } else {
-                changed = false;
-                JOptionPane.showMessageDialog(frame, "Esse Código já Existe!", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(frame, "Não Pode ter campos em Branco ou Não Selecionados!", "Erro", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -273,7 +276,7 @@ public class OpcoesLivros extends Padrao {
         public void actionPerformed(ActionEvent e) {
             changed = false;
             frame.setVisible(false);
-            new Principal(aluno, editora,livro, emprestimo);
+            new Principal(aluno, editora, livro, emprestimo);
         }
     }
 
@@ -297,8 +300,8 @@ public class OpcoesLivros extends Padrao {
             }
         }
     }
-    
-    public void editar(){
+
+    public void editar() {
         tabela.getModel().addTableModelListener(new TableModelListener() {
 
             @Override
@@ -335,15 +338,19 @@ public class OpcoesLivros extends Padrao {
                                     "Erro", JOptionPane.ERROR_MESSAGE);
                         }
                         if (linha >= 0 && coluna != 0) {
-                            if(!"editora".equals(tipo)){
-                            livro.updateCampo(cod, aux, tipo);
-                            }else{
-                                String cod2 = String.valueOf(editora.selectEditora(aux));
-                                editora.updateCampo(cod2, aux);
+                            if (!aux.isEmpty()) {
+                                if (!"editora".equals(tipo)) {
+                                    livro.updateCampo(cod, aux, tipo);
+                                } else {
+                                    String cod2 = String.valueOf(editora.selectEditora(aux));
+                                    editora.updateCampo(cod2, aux);
+                                }
+                                JOptionPane.showMessageDialog(frame,
+                                        "Registro editado com sucesso!!!",
+                                        "Editar", JOptionPane.INFORMATION_MESSAGE);
+                            } else {
+                                JOptionPane.showMessageDialog(frame, "Não Pode ter campos em Branco ou Não Selecionados!", "Erro", JOptionPane.ERROR_MESSAGE);
                             }
-                            JOptionPane.showMessageDialog(frame,
-                                    "Registro editado com sucesso!!!",
-                                    "Editar", JOptionPane.INFORMATION_MESSAGE);
                         }
                     }
                 }
