@@ -3,16 +3,24 @@ package view;
 import com.toedter.calendar.JDateChooser;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Vector;
 import javax.swing.*;
 import model.Aluno;
 import model.Editora;
 import model.Emprestimo;
 import model.Livro;
+import org.w3c.dom.events.Event;
+import org.w3c.dom.events.EventException;
+import org.w3c.dom.events.EventListener;
+import org.w3c.dom.events.EventTarget;
 
 /**
  * Trabalho de .. Professor ..
@@ -29,6 +37,9 @@ public class OpcoesGeral extends Padrao {
     private JTabbedPane tabbedPane;
     private JComboBox jtAluno;
     private JComboBox jtLivro;
+    private Calendar dtAtual = Calendar.getInstance();
+    private JDateChooser dataSaida;
+    private JDateChooser dataDevolucao;
     private JButton btnVoltar;
 
     public OpcoesGeral(Aluno aluno, Livro livro, Editora editora, Emprestimo emprestimo) {
@@ -73,11 +84,23 @@ public class OpcoesGeral extends Padrao {
         jtLivro = new JComboBox(preencheComboBoxLivro());
 
         JLabel lbDataSaida = new JLabel(" Data Saida:           ");
-        JDateChooser dataSaida = new JDateChooser();
+        dataSaida = new JDateChooser(dtAtual.getTime());
 
         JLabel lbDataDevolucao = new JLabel(" Data Devolucao:  ");
-        JDateChooser dataDevolucao = new JDateChooser();
+        dtAtual.add(Calendar.DAY_OF_MONTH, 10);
+        dataDevolucao = new JDateChooser(dtAtual.getTime());
 
+        /**
+         * dataSaida.getDateEditor().addPropertyChangeListener(new
+         * PropertyChangeListener() {
+         *
+         * @Override public void propertyChange(PropertyChangeEvent evt) {
+         * Calendar dtAux = Calendar.getInstance();
+         * dtAux.setTime(dataSaida.getDate()); dtAux.add(Calendar.DAY_OF_MONTH,
+         * 10); Date dataAux = dtAtual.getTime();
+         * dataDevolucao.setDate(dataAux); } });
+        *
+         */
         JButton btnSalvar = new JButton("Salvar");
         btnSalvar.addActionListener(new OpcoesGeral.SalvarActionListener());
         btnVoltar = new JButton("Voltar");
@@ -162,6 +185,19 @@ public class OpcoesGeral extends Padrao {
 
         @Override
         public void actionPerformed(ActionEvent e) {
+            String cgmAluno = jtAluno.getSelectedItem().toString();
+            String idLivro = jtLivro.getSelectedItem().toString();
+            String data = new SimpleDateFormat("dd/MM/yyyy").format(dataSaida.getDate());
+            String dtDevolucao = new SimpleDateFormat("dd/MM/yyyy").format(dataDevolucao.getDate());
+            if (!"--Escolha um Aluno--".equals(cgmAluno) && !"--Escolha um Livro--".equals(idLivro) && !data.isEmpty() && !dtDevolucao.isEmpty()) {
+                if (dataDevolucao.getDate().after(dataSaida.getDate())) {
+                    System.out.println(data);
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Data de Devolução deve ser DEPOIS da Data de Saída!", "Erro", JOptionPane.ERROR_MESSAGE);
+                }
+            }else{
+                JOptionPane.showMessageDialog(frame, "Não Pode ter campos em Branco ou Não Selecionados!", "Erro", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 }
