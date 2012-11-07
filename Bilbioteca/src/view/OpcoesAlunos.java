@@ -173,11 +173,7 @@ public class OpcoesAlunos extends Padrao {
         tabela.getColumnModel().getColumn(4).setPreferredWidth(350);
         tabela.getColumnModel().getColumn(5).setPreferredWidth(100);
 
-        btnEditar = new JButton("Editar");
-
-        btnEditar.addActionListener(new OpcoesAlunos.EditarActionListener());
         btnRemover = new JButton("Remover");
-
         btnRemover.addActionListener(new OpcoesAlunos.RemoverActionListener());
 
         btnVoltar = new JButton("Voltar");

@@ -1,6 +1,7 @@
 package model;
 
 import controler.Database;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
@@ -71,5 +72,17 @@ public class Emprestimo {
         } catch (ClassNotFoundException | SQLException ex) {
             System.out.println(ex.getMessage());
         }
+    }
+    
+    public ResultSet selectAll() {
+        try {
+            String sql = "SELECT e.*, a.nome AS nome FROM emprestimos e, alunos a WHERE e.Alunos_CGM = a.CGM ORDER BY a.CGM ASC";
+            ResultSet rs = this.database.stm.executeQuery(sql);
+
+            return rs;
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+        return null;
     }
 }
