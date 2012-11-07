@@ -74,43 +74,46 @@ public class OpcoesGeral extends Padrao {
 
         JLabel lbDataSaida = new JLabel(" Data Saida:           ");
         JDateChooser dataSaida = new JDateChooser();
-        
+
         JLabel lbDataDevolucao = new JLabel(" Data Devolucao:  ");
         JDateChooser dataDevolucao = new JDateChooser();
-        
+
+        JButton btnSalvar = new JButton("Salvar");
+        btnSalvar.addActionListener(new OpcoesGeral.SalvarActionListener());
         btnVoltar = new JButton("Voltar");
         btnVoltar.addActionListener(new OpcoesGeral.VoltarActionListener());
-        
+
         JPanel panel0 = new JPanel();
         panel0.add(lbCGM);
         panel0.add(jtAluno);
-        panel0.setLayout(new GridLayout(2,1));
+        panel0.setLayout(new GridLayout(2, 1));
 
         JPanel panel1 = new JPanel();
         panel1.add(lbLivro);
         panel1.add(jtLivro);
-        panel1.setLayout(new GridLayout(2,1));
-        
+        panel1.setLayout(new GridLayout(2, 1));
+
         JPanel panel2 = new JPanel();
         panel2.add(lbDataSaida);
         panel2.add(dataSaida);
-        panel2.setLayout(new GridLayout(2,1));
-        
+        panel2.setLayout(new GridLayout(2, 1));
+
         JPanel panel3 = new JPanel();
         panel3.add(lbDataDevolucao);
         panel3.add(dataDevolucao);
-        panel3.setLayout(new GridLayout(2,1));
-        
+        panel3.setLayout(new GridLayout(2, 1));
+
         JPanel panel4 = new JPanel();
+        panel4.add(btnSalvar);
         panel4.add(btnVoltar);
-        panel4.setLayout(new GridLayout(1,1));
+        panel4.setLayout(new GridLayout(1, 2));
 
         panel.add(panel0);
         panel.add(panel1);
         panel.add(panel2);
         panel.add(panel3);
         panel.add(panel4);
-        panel.setLayout(new FlowLayout(FlowLayout.LEFT, 70, 20));
+        panel.setLayout(new FlowLayout(FlowLayout.CENTER, 1000, 40));
         return panel;
     }
 
@@ -145,13 +148,20 @@ public class OpcoesGeral extends Padrao {
         }
         return null;
     }
-    
+
     private class VoltarActionListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
             frame.setVisible(false);
-            new Principal(aluno, editora,livro, emprestimo);
+            new Principal(aluno, editora, livro, emprestimo);
+        }
+    }
+
+    private class SalvarActionListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
         }
     }
 }
