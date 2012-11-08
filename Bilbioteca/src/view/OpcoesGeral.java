@@ -50,11 +50,15 @@ public class OpcoesGeral extends Padrao {
     private JPanel panelBusca;
     private JTable tabela;
     private DefaultTableModel modelo = new DefaultTableModel() {
+
         @Override
         public boolean isCellEditable(int rowIndex, int mColIndex) {
             return false;
         }
     };
+    private JLabel jtNome;
+    private JLabel jtNome2;
+    private JButton btnRemover;
 
     public OpcoesGeral(Aluno aluno, Livro livro, Editora editora, Emprestimo emprestimo) {
         super();
@@ -91,30 +95,19 @@ public class OpcoesGeral extends Padrao {
     }
 
     public JComponent emprestimo(JComponent panel) {
-        JLabel lbCGM = new JLabel(" CGM:                      ");
+        JLabel lbCGM = new JLabel(" CGM:");
         jtAluno = new JComboBox(preencheComboBoxAluno());
 
-        JLabel lbLivro = new JLabel(" Livro:                      ");
+        JLabel lbLivro = new JLabel(" Livro:");
         jtLivro = new JComboBox(preencheComboBoxLivro());
 
-        JLabel lbDataSaida = new JLabel(" Data Saida:           ");
+        JLabel lbDataSaida = new JLabel(" Data Saida:");
         dataSaida = new JDateChooser(dtAtual.getTime());
 
-        JLabel lbDataDevolucao = new JLabel(" Data Devolucao:  ");
+        JLabel lbDataDevolucao = new JLabel(" Data Devolucao: ");
         dtAtual.add(Calendar.DAY_OF_MONTH, 10);
         dataDevolucao = new JDateChooser(dtAtual.getTime());
 
-        /**
-         * dataSaida.getDateEditor().addPropertyChangeListener(new
-         * PropertyChangeListener() {
-         *
-         * @Override public void propertyChange(PropertyChangeEvent evt) {
-         * Calendar dtAux = Calendar.getInstance();
-         * dtAux.setTime(dataSaida.getDate()); dtAux.add(Calendar.DAY_OF_MONTH,
-         * 10); Date dataAux = dtAtual.getTime();
-         * dataDevolucao.setDate(dataAux); } });
-         *
-         */
         JButton btnSalvar = new JButton("Salvar");
         btnSalvar.addActionListener(new OpcoesGeral.SalvarActionListener());
         btnVoltar = new JButton("Voltar");
@@ -155,7 +148,7 @@ public class OpcoesGeral extends Padrao {
     }
 
     public JComponent historico(JComponent panel) {
-        tfBuscar = new JTextField(30);
+        tfBuscar = new JTextField(35);
 
         btnBuscar = new JButton("OK");
         btnBuscar.addActionListener(new OpcoesGeral.BtnBuscarActionListener());
@@ -165,62 +158,94 @@ public class OpcoesGeral extends Padrao {
         panelBusca.add(tfBuscar);
         panelBusca.add(btnBuscar);
 
+        jtNome = new JLabel("Nome do Aluno: ");
+        jtNome2 = new JLabel("");
+        JPanel panel1 = new JPanel();
+        panel1.add(jtNome);
+        panel1.add(jtNome2);
+        panel1.setLayout(new GridLayout(1, 1));
+        
+        btnRemover = new JButton("Remover");
+        btnRemover.addActionListener(new OpcoesGeral.RemoverActionListener());
+
         tabela = new JTable(modelo);
         tabela.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
         modelo.addColumn("CGM");
-        modelo.addColumn("Nome");
+        //modelo.addColumn("Nome");
         modelo.addColumn("Cod Livro");
         modelo.addColumn("Data Saida");
         modelo.addColumn("Data Devolução");
         modelo.addColumn("Status");
+
         
-        preencheTabela();
         JScrollPane scrollPane = new JScrollPane(tabela);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 
         tabela.getColumnModel().getColumn(0).setPreferredWidth(60);
-        tabela.getColumnModel().getColumn(1).setPreferredWidth(100);
-        tabela.getColumnModel().getColumn(2).setPreferredWidth(60);
-        tabela.getColumnModel().getColumn(3).setPreferredWidth(150);
-        tabela.getColumnModel().getColumn(4).setPreferredWidth(150);
-        tabela.getColumnModel().getColumn(5).setPreferredWidth(100);
-        
-        panel.add(panelBusca, BorderLayout.CENTER);
-        panel.add(scrollPane, BorderLayout.CENTER);
-        
+        tabela.getColumnModel().getColumn(1).setPreferredWidth(60);
+        tabela.getColumnModel().getColumn(2).setPreferredWidth(200);
+        tabela.getColumnModel().getColumn(3).setPreferredWidth(200);
+        tabela.getColumnModel().getColumn(4).setPreferredWidth(100);
+        panel.add(panelBusca);
+        panel.add(panel1);
+        panel.add(scrollPane);
+        panel.setLayout(new FlowLayout(FlowLayout.LEFT, 50, 10));
+
         return panel;
     }
 
-    private void preencheTabela() {
+    private Boolean preencheTabela(String cgm) {
+        boolean existe = false;
         try {
-            ResultSet rs = emprestimo.selectAll();
+            ResultSet rs = emprestimo.selectAlunoCGM(cgm);
             while (rs.next()) {
+                existe = true;
+                jtNome2.setText(rs.getString("nome"));
                 modelo.addRow(new String[]{
                             rs.getString("Alunos_CGM"),
-                            rs.getString("nome"),
                             rs.getString("livro_idlivro"),
                             rs.getString("dataSaida"),
                             rs.getString("dataDevolucao"),
                             rs.getString("status")});
             }
+            if(existe) return true;
+        
         } catch (SQLException ex) {
             Logger.getLogger(OpcoesAlunos.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return false;
     }
 
     private class BtnBuscarActionListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            String nome = tfBuscar.getText();
+            String cgm = tfBuscar.getText();
+            if (!preencheTabela(cgm)) {
+                JOptionPane.showMessageDialog(frame, "Aluno não encontrado", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+    
+    private class RemoverActionListener implements ActionListener {
 
-            //if (busca.getNome(nome)) {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int resposta = JOptionPane.showConfirmDialog(frame, "Deseja remover esse registro?", "Remoção", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if (resposta == JOptionPane.OK_OPTION) {
+                int linha = tabela.getSelectedRow();
+                if (linha >= 0) {
+                    String codigo = tabela.getValueAt(linha, 0).toString();
+                    emprestimo.deleteEmprestimo(codigo);
+                    modelo.removeRow(linha); //remove a linha
 
-            //} else {
-            JOptionPane.showMessageDialog(frame, "Livro não encontrado", "Error", JOptionPane.ERROR_MESSAGE);
-            //}
+                    JOptionPane.showMessageDialog(frame,
+                            "Registro excluído com sucesso!!!",
+                            "Remover", JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
         }
     }
 
@@ -229,7 +254,6 @@ public class OpcoesGeral extends Padrao {
             ResultSet rs = aluno.selectAll();
             Vector vetor = new Vector();
             vetor.add(("--Escolha um Aluno--"));
-
             while (rs.next()) {
                 vetor.add(rs.getString("CGM"));
             }
@@ -273,10 +297,11 @@ public class OpcoesGeral extends Padrao {
             String idLivro = jtLivro.getSelectedItem().toString();
             String data = new SimpleDateFormat("dd/MM/yyyy").format(dataSaida.getDate());
             String dtDevolucao = new SimpleDateFormat("dd/MM/yyyy").format(dataDevolucao.getDate());
-            
+
             if (!"--Escolha um Aluno--".equals(cgmAluno) && !"--Escolha um Livro--".equals(idLivro) && !data.isEmpty() && !dtDevolucao.isEmpty()) {
                 if (dataDevolucao.getDate().after(dataSaida.getDate())) {
                     emprestimo.insertEmprestimo(cgmAluno, idLivro, dataSaida.getDate(), dataDevolucao.getDate(), "Emprestimo");
+                    JOptionPane.showMessageDialog(frame, "Emprestimo Salvo com Sucesso!!!", "Emprestimo", JOptionPane.INFORMATION_MESSAGE);
                 } else {
                     JOptionPane.showMessageDialog(frame, "Data de Devolução deve ser DEPOIS da Data de Saída!", "Erro", JOptionPane.ERROR_MESSAGE);
                 }

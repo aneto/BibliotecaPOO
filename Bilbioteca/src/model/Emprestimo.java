@@ -74,9 +74,9 @@ public class Emprestimo {
         }
     }
     
-    public ResultSet selectAll() {
+    public ResultSet selectAlunoCGM(String cgm) {
         try {
-            String sql = "SELECT e.*, a.nome AS nome FROM emprestimos e, alunos a WHERE e.Alunos_CGM = a.CGM ORDER BY a.CGM ASC";
+            String sql = "SELECT e.*, a.nome AS nome, strftime('%d/%m/%Y', e.dataSaida) AS dataSaida1 FROM emprestimos e, alunos a WHERE e.Alunos_CGM ='"+cgm+"' AND e.Alunos_CGM = a.CGM ORDER BY a.CGM ASC";
             ResultSet rs = this.database.stm.executeQuery(sql);
 
             return rs;
@@ -84,5 +84,16 @@ public class Emprestimo {
             System.out.println(ex.getMessage());
         }
         return null;
+    }
+    
+    
+    public void deleteEmprestimo(String CGM){
+        try {
+            Class.forName("org.sqlite.JDBC");
+            this.database.stm = this.database.conn.createStatement();
+            this.database.stm.executeUpdate("DELETE FROM emprestimos where cgm ='" + CGM + "';");
+        } catch (ClassNotFoundException | SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
     }
 }
