@@ -87,11 +87,11 @@ public class Emprestimo {
     }
     
     
-    public void deleteEmprestimo(String CGM){
+    public void deleteEmprestimo(String CGM, Date dataSaida, Date dataDevolucao){
         try {
             Class.forName("org.sqlite.JDBC");
             this.database.stm = this.database.conn.createStatement();
-            this.database.stm.executeUpdate("DELETE FROM emprestimos where cgm ='" + CGM + "';");
+            this.database.stm.executeUpdate("DELETE FROM emprestimos where cgm ='" + CGM + "' AND dataSaida ='" + dataSaida + "' AND dataDevolucao ='" + dataDevolucao + "';");
         } catch (ClassNotFoundException | SQLException ex) {
             System.out.println(ex.getMessage());
         }

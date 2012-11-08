@@ -22,8 +22,8 @@ public class Padrao {
         lookAndFeel();
         
         frame.pack();
-        frame.setSize(640, 590);
-        frame.setResizable(false);
+        frame.setSize(800, 600);
+        //frame.setResizable(false);
         frame.setLocationRelativeTo(null); //centraliza a tela 
     }
 

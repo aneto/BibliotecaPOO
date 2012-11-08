@@ -2,6 +2,7 @@ package view;
 
 import com.toedter.calendar.JDateChooser;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.*;
@@ -59,6 +60,10 @@ public class OpcoesGeral extends Padrao {
     private JLabel jtNome;
     private JLabel jtNome2;
     private JButton btnRemover;
+    private int largura;
+    private int altura;
+
+
 
     public OpcoesGeral(Aluno aluno, Livro livro, Editora editora, Emprestimo emprestimo) {
         super();
@@ -103,10 +108,12 @@ public class OpcoesGeral extends Padrao {
 
         JLabel lbDataSaida = new JLabel(" Data Saida:");
         dataSaida = new JDateChooser(dtAtual.getTime());
+        dataSaida.setPreferredSize(new Dimension(130, 30));
 
         JLabel lbDataDevolucao = new JLabel(" Data Devolucao: ");
         dtAtual.add(Calendar.DAY_OF_MONTH, 10);
         dataDevolucao = new JDateChooser(dtAtual.getTime());
+        dataDevolucao.setPreferredSize(new Dimension(130, 30));
 
         JButton btnSalvar = new JButton("Salvar");
         btnSalvar.addActionListener(new OpcoesGeral.SalvarActionListener());
@@ -164,12 +171,12 @@ public class OpcoesGeral extends Padrao {
         panel1.add(jtNome);
         panel1.add(jtNome2);
         panel1.setLayout(new GridLayout(1, 1));
-        
+
         btnRemover = new JButton("Remover");
         btnRemover.addActionListener(new OpcoesGeral.RemoverActionListener());
 
         tabela = new JTable(modelo);
-        tabela.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        //tabela.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
         modelo.addColumn("CGM");
         //modelo.addColumn("Nome");
@@ -177,22 +184,33 @@ public class OpcoesGeral extends Padrao {
         modelo.addColumn("Data Saida");
         modelo.addColumn("Data Devolução");
         modelo.addColumn("Status");
-
-        
-        JScrollPane scrollPane = new JScrollPane(tabela);
+        final JScrollPane scrollPane = new JScrollPane(tabela);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-
+        
+        
+        frame.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                largura = frame.getWidth();
+                altura = frame.getHeight();
+                System.out.println(altura);
+                scrollPane.setPreferredSize(new Dimension(largura-100, altura-150));
+            }
+        });
+        
         tabela.getColumnModel().getColumn(0).setPreferredWidth(60);
         tabela.getColumnModel().getColumn(1).setPreferredWidth(60);
         tabela.getColumnModel().getColumn(2).setPreferredWidth(200);
         tabela.getColumnModel().getColumn(3).setPreferredWidth(200);
         tabela.getColumnModel().getColumn(4).setPreferredWidth(100);
+
         panel.add(panelBusca);
         panel.add(panel1);
         panel.add(scrollPane);
         panel.setLayout(new FlowLayout(FlowLayout.LEFT, 50, 10));
 
+        
         return panel;
     }
 
@@ -210,8 +228,10 @@ public class OpcoesGeral extends Padrao {
                             rs.getString("dataDevolucao"),
                             rs.getString("status")});
             }
-            if(existe) return true;
-        
+            if (existe) {
+                return true;
+            }
+
         } catch (SQLException ex) {
             Logger.getLogger(OpcoesAlunos.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -228,7 +248,7 @@ public class OpcoesGeral extends Padrao {
             }
         }
     }
-    
+
     private class RemoverActionListener implements ActionListener {
 
         @Override
@@ -238,7 +258,9 @@ public class OpcoesGeral extends Padrao {
                 int linha = tabela.getSelectedRow();
                 if (linha >= 0) {
                     String codigo = tabela.getValueAt(linha, 0).toString();
-                    emprestimo.deleteEmprestimo(codigo);
+                    String dataSaida = tabela.getValueAt(linha, 2).toString();
+                    String dataDevolucao = tabela.getValueAt(linha, 3).toString();
+                    //emprestimo.deleteEmprestimo(codigo, dataSaida, dataDevolucao);
                     modelo.removeRow(linha); //remove a linha
 
                     JOptionPane.showMessageDialog(frame,
