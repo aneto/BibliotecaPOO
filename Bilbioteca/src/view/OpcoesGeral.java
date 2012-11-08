@@ -1,6 +1,7 @@
 package view;
 
 import com.toedter.calendar.JDateChooser;
+import componentes.UJComboBox;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -40,8 +41,8 @@ public class OpcoesGeral extends Padrao {
     private Emprestimo emprestimo;
     private Editora editora;
     private JTabbedPane tabbedPane;
-    private JComboBox jtAluno;
-    private JComboBox jtLivro;
+    private UJComboBox jtAluno;
+    private UJComboBox jtLivro;
     private Calendar dtAtual = Calendar.getInstance();
     private JDateChooser dataSaida;
     private JDateChooser dataDevolucao;
@@ -100,10 +101,12 @@ public class OpcoesGeral extends Padrao {
 
     public JComponent emprestimo(JComponent panel) {
         JLabel lbCGM = new JLabel(" CGM:");
-        jtAluno = new JComboBox(preencheComboBoxAluno());
-
+        jtAluno = new UJComboBox(preencheComboBoxAluno());
+        jtAluno.setAutocompletar(true);
+        
         JLabel lbLivro = new JLabel(" Livro:");
-        jtLivro = new JComboBox(preencheComboBoxLivro());
+        jtLivro = new UJComboBox(preencheComboBoxLivro());
+        jtLivro.setAutocompletar(true);
 
         JLabel lbDataSaida = new JLabel(" Data Saida:");
         dataSaida = new JDateChooser(dtAtual.getTime());
@@ -189,12 +192,6 @@ public class OpcoesGeral extends Padrao {
         scrollPane = new JScrollPane(tabela);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-
-        tabela.getColumnModel().getColumn(0).setPreferredWidth(60);
-        tabela.getColumnModel().getColumn(1).setPreferredWidth(60);
-        tabela.getColumnModel().getColumn(2).setPreferredWidth(200);
-        tabela.getColumnModel().getColumn(3).setPreferredWidth(200);
-        tabela.getColumnModel().getColumn(4).setPreferredWidth(100);
 
         frame.addComponentListener(new ComponentAdapter() {
 
