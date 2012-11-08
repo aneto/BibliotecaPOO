@@ -1,10 +1,13 @@
 package view;
 
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -151,8 +154,7 @@ public class OpcoesAlunos extends Padrao {
     public JComponent listar(JComponent panel) {
         changed = true;
         tabela = new JTable(modelo);
-        tabela.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-
+        
         modelo.addColumn("CGM");
         modelo.addColumn("Nome");
         modelo.addColumn("Serie");
@@ -161,17 +163,21 @@ public class OpcoesAlunos extends Padrao {
         modelo.addColumn("Telefone");
 
         preencheTabela();
-        JScrollPane scrollPane = new JScrollPane(tabela);
+        final JScrollPane scrollPane = new JScrollPane(tabela);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 
-        tabela.getColumnModel().getColumn(0).setPreferredWidth(60);
-        tabela.getColumnModel().getColumn(0).getCellEditor();
-        tabela.getColumnModel().getColumn(1).setPreferredWidth(120);
-        tabela.getColumnModel().getColumn(2).setPreferredWidth(40);
-        tabela.getColumnModel().getColumn(3).setPreferredWidth(120);
-        tabela.getColumnModel().getColumn(4).setPreferredWidth(350);
-        tabela.getColumnModel().getColumn(5).setPreferredWidth(100);
+        frame.addComponentListener(new ComponentAdapter() {
+
+            @Override
+            public void componentResized(ComponentEvent e) {
+                scrollPane.setPreferredSize(new Dimension(frame.getWidth() - 100, frame.getHeight() - 150));
+            }
+
+            public void componentMoved(java.awt.event.ComponentEvent e) {
+                scrollPane.setPreferredSize(new Dimension(frame.getWidth() - 100, frame.getHeight() - 150));
+            }
+        });
 
         btnRemover = new JButton("Remover");
         btnRemover.addActionListener(new OpcoesAlunos.RemoverActionListener());

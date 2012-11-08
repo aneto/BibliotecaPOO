@@ -1,9 +1,12 @@
 package view;
 
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
@@ -163,7 +166,6 @@ public class OpcoesLivros extends Padrao {
     public JComponent listar(JComponent panel) {
         changed = true;
         tabela = new JTable(modelo);
-        tabela.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
         modelo.addColumn("Código");
         modelo.addColumn("Titulo");
@@ -175,19 +177,21 @@ public class OpcoesLivros extends Padrao {
 
         preencheTabela();
 
-        JScrollPane scrollPane = new JScrollPane(tabela);
+        final JScrollPane scrollPane = new JScrollPane(tabela);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 
+        frame.addComponentListener(new ComponentAdapter() {
 
-        tabela.getColumnModel().getColumn(0).setPreferredWidth(100);
-        tabela.getColumnModel().getColumn(0).getCellEditor();
-        tabela.getColumnModel().getColumn(1).setPreferredWidth(100);
-        tabela.getColumnModel().getColumn(2).setPreferredWidth(100);
-        tabela.getColumnModel().getColumn(3).setPreferredWidth(100);
-        tabela.getColumnModel().getColumn(4).setPreferredWidth(100);
-        tabela.getColumnModel().getColumn(5).setPreferredWidth(100);
-        tabela.getColumnModel().getColumn(6).setPreferredWidth(100);
+            @Override
+            public void componentResized(ComponentEvent e) {
+                scrollPane.setPreferredSize(new Dimension(frame.getWidth() - 100, frame.getHeight() - 150));
+            }
+
+            public void componentMoved(java.awt.event.ComponentEvent e) {
+                scrollPane.setPreferredSize(new Dimension(frame.getWidth() - 100, frame.getHeight() - 150));
+            }
+        });
 
         btnRemover = new JButton("Remover");
         btnRemover.addActionListener(new OpcoesLivros.RemoverActionListener());

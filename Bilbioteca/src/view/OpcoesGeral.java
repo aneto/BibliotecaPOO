@@ -62,8 +62,7 @@ public class OpcoesGeral extends Padrao {
     private JButton btnRemover;
     private int largura;
     private int altura;
-
-
+    private JScrollPane scrollPane;
 
     public OpcoesGeral(Aluno aluno, Livro livro, Editora editora, Emprestimo emprestimo) {
         super();
@@ -167,13 +166,16 @@ public class OpcoesGeral extends Padrao {
 
         jtNome = new JLabel("Nome do Aluno: ");
         jtNome2 = new JLabel("");
-        JPanel panel1 = new JPanel();
-        panel1.add(jtNome);
-        panel1.add(jtNome2);
-        panel1.setLayout(new GridLayout(1, 1));
+        JPanel panelNome = new JPanel();
+        panelNome.add(jtNome);
+        panelNome.add(jtNome2);
+        panelNome.setLayout(new GridLayout(1, 1));
 
         btnRemover = new JButton("Remover");
         btnRemover.addActionListener(new OpcoesGeral.RemoverActionListener());
+
+        btnVoltar = new JButton("Voltar");
+        btnVoltar.addActionListener(new OpcoesGeral.VoltarActionListener());
 
         tabela = new JTable(modelo);
         //tabela.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
@@ -184,33 +186,35 @@ public class OpcoesGeral extends Padrao {
         modelo.addColumn("Data Saida");
         modelo.addColumn("Data Devolução");
         modelo.addColumn("Status");
-        final JScrollPane scrollPane = new JScrollPane(tabela);
+        scrollPane = new JScrollPane(tabela);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-        
-        
-        frame.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                largura = frame.getWidth();
-                altura = frame.getHeight();
-                System.out.println(altura);
-                scrollPane.setPreferredSize(new Dimension(largura-100, altura-150));
-            }
-        });
-        
+
         tabela.getColumnModel().getColumn(0).setPreferredWidth(60);
         tabela.getColumnModel().getColumn(1).setPreferredWidth(60);
         tabela.getColumnModel().getColumn(2).setPreferredWidth(200);
         tabela.getColumnModel().getColumn(3).setPreferredWidth(200);
         tabela.getColumnModel().getColumn(4).setPreferredWidth(100);
 
-        panel.add(panelBusca);
-        panel.add(panel1);
-        panel.add(scrollPane);
-        panel.setLayout(new FlowLayout(FlowLayout.LEFT, 50, 10));
+        frame.addComponentListener(new ComponentAdapter() {
 
-        
+            @Override
+            public void componentResized(ComponentEvent e) {
+                scrollPane.setPreferredSize(new Dimension(frame.getWidth() - 100, frame.getHeight() - 150));
+            }
+
+            public void componentMoved(java.awt.event.ComponentEvent e) {
+                scrollPane.setPreferredSize(new Dimension(frame.getWidth() - 100, frame.getHeight() - 150));
+            }
+        });
+
+        panel.add(panelBusca);
+        panel.add(panelNome);
+        panel.add(scrollPane);
+        panel.add(btnRemover);
+        panel.add(btnVoltar);
+        panel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 5));
+
         return panel;
     }
 
