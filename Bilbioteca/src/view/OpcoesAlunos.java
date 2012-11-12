@@ -88,7 +88,7 @@ public class OpcoesAlunos extends Padrao {
         jtNome = new JTextField(40);
 
         JLabel lbSerie = new JLabel("Série: ");
-        jtSerie = new JTextField(8);
+        jtSerie = new JTextField(40);
 
         JLabel lbFiliacao = new JLabel("Filiação: ");
         jtFiliacao = new JTextField(40);
@@ -98,6 +98,7 @@ public class OpcoesAlunos extends Padrao {
 
         JLabel lbTelefone = new JLabel("Telefone: ");
         jtTelefone = new JFormattedTextField((setMascaraTelefone("(##) ####-####             ")));
+        jtTelefone.setPreferredSize(new Dimension(450,30));
 
         JButton btnSalvar = new JButton("Salvar");
         btnSalvar.addActionListener(new OpcoesAlunos.SalvarActionListener());
@@ -146,7 +147,7 @@ public class OpcoesAlunos extends Padrao {
         panel.add(panel5);
         panel.add(panel4);
         panel.add(panel6);
-        panel.setLayout(new FlowLayout(FlowLayout.LEFT, 70, 20));
+        panel.setLayout(new FlowLayout(FlowLayout.CENTER, 1000, 23));
         
         return panel;
     }

@@ -1,5 +1,6 @@
 package view;
 
+import componentes.UJComboBox;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -37,7 +38,7 @@ public class OpcoesLivros extends Padrao {
     private JTextField jtBox;
     private JTextField jtEstante;
     private JTextField jtArea;
-    private JComboBox jtEditora;
+    private UJComboBox jtEditora;
     private JButton btnRemover;
     private JButton btnVoltar;
     private JTable tabela;
@@ -84,7 +85,7 @@ public class OpcoesLivros extends Padrao {
     public JComponent cadastrar(JComponent panel) {
         changed = false;
         JLabel lbCod = new JLabel(" Código: ");
-        jtCod = new JTextField(15);
+        jtCod = new JTextField(45);
 
         JLabel lbNome = new JLabel(" Título:    ");
         jtTitulo = new JTextField(45);
@@ -93,8 +94,10 @@ public class OpcoesLivros extends Padrao {
         jtAutor = new JTextField(45);
 
         JLabel lbEditora = new JLabel(" Editora:  ");
-        jtEditora = new JComboBox(preencheComboBox());
+        jtEditora = new UJComboBox(preencheComboBox());
         jtEditora.setEditable(true);
+        jtEditora.setAutocompletar(true);
+        jtEditora.setPreferredSize(new Dimension(510,30));
 
         JLabel lbbox = new JLabel(" Box:        ");
         jtBox = new JTextField(45);
@@ -158,7 +161,7 @@ public class OpcoesLivros extends Padrao {
         panel.add(panel5);
         panel.add(panel6);
         panel.add(panel7);
-        panel.setLayout(new FlowLayout(FlowLayout.LEFT, 70, 10));
+        panel.setLayout(new FlowLayout(FlowLayout.CENTER, 1000, 13));
 
         return panel;
     }

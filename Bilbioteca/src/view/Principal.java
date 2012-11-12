@@ -117,7 +117,8 @@ public class Principal extends Padrao {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            System.out.println("Calendario");
+            frame.setVisible(false);
+            new Calendario();
         }
     }
 }

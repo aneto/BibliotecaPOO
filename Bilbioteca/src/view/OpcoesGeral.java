@@ -11,9 +11,12 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -218,7 +221,7 @@ public class OpcoesGeral extends Padrao {
     private Boolean preencheTabela(String cgm) {
         boolean existe = false;
         try {
-            ResultSet rs = emprestimo.selectAlunoCGM(cgm);
+            ResultSet rs = emprestimo.selectViewEmprestimos(cgm);
             while (rs.next()) {
                 existe = true;
                 jtNome2.setText(rs.getString("nome"));
@@ -258,15 +261,26 @@ public class OpcoesGeral extends Padrao {
             if (resposta == JOptionPane.OK_OPTION) {
                 int linha = tabela.getSelectedRow();
                 if (linha >= 0) {
-                    String codigo = tabela.getValueAt(linha, 0).toString();
-                    String dataSaida = tabela.getValueAt(linha, 2).toString();
-                    String dataDevolucao = tabela.getValueAt(linha, 3).toString();
-                    //emprestimo.deleteEmprestimo(codigo, dataSaida, dataDevolucao);
-                    modelo.removeRow(linha); //remove a linha
+                    try {
+                        String pattern = "dd/MM/yyyy";
+                        DateFormat df = new SimpleDateFormat(pattern);
+                        
+                        String codigo = tabela.getValueAt(linha, 0).toString();
+                        
+                        String dtSaida = df.format(new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy", Locale.UK).parse(tabela.getValueAt(linha, 2).toString()));
+                        Date dataSaida = df.parse(dtSaida);
 
-                    JOptionPane.showMessageDialog(frame,
-                            "Registro excluído com sucesso!!!",
-                            "Remover", JOptionPane.INFORMATION_MESSAGE);
+                        String dtDevolucao = df.format(new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy", Locale.UK).parse(tabela.getValueAt(linha, 3).toString()));
+                        Date dataDevolucao = df.parse(dtDevolucao);
+                        emprestimo.deleteEmprestimo(codigo, dataSaida, dataDevolucao);
+                        modelo.removeRow(linha); //remove a linha
+
+                        JOptionPane.showMessageDialog(frame,
+                                "Registro excluído com sucesso!!!",
+                                "Remover", JOptionPane.INFORMATION_MESSAGE);
+                    } catch (ParseException ex) {
+                        Logger.getLogger(OpcoesGeral.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             }
         }

@@ -86,12 +86,25 @@ public class Emprestimo {
         return null;
     }
     
+    public ResultSet selectViewEmprestimos(String cgm) {
+        try {
+            String sql = "SELECT * FROM viewEmprestimos WHERE Alunos_CGM ='"+cgm+"'";
+            ResultSet rs = this.database.stm.executeQuery(sql);
+
+            return rs;
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+        return null;
+    }
+    
+    
     
     public void deleteEmprestimo(String CGM, Date dataSaida, Date dataDevolucao){
         try {
             Class.forName("org.sqlite.JDBC");
             this.database.stm = this.database.conn.createStatement();
-            this.database.stm.executeUpdate("DELETE FROM emprestimos where cgm ='" + CGM + "' AND dataSaida ='" + dataSaida + "' AND dataDevolucao ='" + dataDevolucao + "';");
+            this.database.stm.executeUpdate("DELETE FROM emprestimos where Alunos_CGM ='" + CGM + "' AND dataSaida ='" + dataSaida + "' AND dataDevolucao ='" + dataDevolucao + "' AND status = 'Emprestimo';");
         } catch (ClassNotFoundException | SQLException ex) {
             System.out.println(ex.getMessage());
         }
