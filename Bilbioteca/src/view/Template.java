@@ -11,11 +11,11 @@ import javax.swing.UIManager;
  * @author Alexandre
  * @version 1.0
  */
-public class Padrao {
+public class Template {
     
     protected JFrame frame;
     
-    public Padrao() {
+    public Template() {
         frame = new JFrame("BibliotQAM - Gerenciamento da Biblioteca");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -33,7 +33,7 @@ public class Padrao {
             UIManager.LookAndFeelInfo[] looks = UIManager.getInstalledLookAndFeels();
             UIManager.setLookAndFeel(looks[i].getClassName());
         } catch (Exception ex) {
-            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

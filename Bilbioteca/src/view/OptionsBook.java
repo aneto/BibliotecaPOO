@@ -15,10 +15,10 @@ import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
-import model.Aluno;
-import model.Editora;
-import model.Emprestimo;
-import model.Livro;
+import model.Book;
+import model.Lending;
+import model.Publisher;
+import model.Student;
 
 /**
  * Trabalho de .. Professor ..
@@ -26,25 +26,26 @@ import model.Livro;
  * @author Alexandre
  * @version 1.0
  */
-public class OpcoesLivros extends Padrao {
+public class OptionsBook extends Template {
 
-    private Aluno aluno;
-    private Livro livro;
-    private Emprestimo emprestimo;
-    private Editora editora;
-    private JTextField jtCod;
-    private JTextField jtTitulo;
-    private JTextField jtAutor;
+    private Student student;
+    private Book book;
+    private Lending lending;
+    private Publisher publisher;
+    private JTextField jtCodeBook;
+    private JTextField jtTitle;
+    private JTextField jtAuthor;
     private JTextField jtBox;
-    private JTextField jtEstante;
+    private JTextField jtBookcase;
     private JTextField jtArea;
-    private UJComboBox jtEditora;
-    private JButton btnRemover;
-    private JButton btnVoltar;
-    private JTable tabela;
+    private UJComboBox jtPublisher;
+    private JButton btnSave;
+    private JButton btnDelete;
+    private JButton btnBack;
+    private JTable table;
     private JTabbedPane tabbedPane;
     private Boolean changed = false;
-    private DefaultTableModel modelo = new DefaultTableModel() {
+    private DefaultTableModel model = new DefaultTableModel() {
 
         @Override
         public boolean isCellEditable(int rowIndex, int mColIndex) {
@@ -55,12 +56,12 @@ public class OpcoesLivros extends Padrao {
         }
     };
 
-    public OpcoesLivros(Aluno aluno, Editora editora, Livro livro, Emprestimo emprestimo) {
+    public OptionsBook(Student student, Publisher publisher, Book book, Lending lending) {
         super();
-        this.aluno = aluno;
-        this.livro = livro;
-        this.editora = editora;
-        this.emprestimo = emprestimo;
+        this.student = student;
+        this.book = book;
+        this.publisher = publisher;
+        this.lending = lending;
         init();
     }
 
@@ -74,8 +75,8 @@ public class OpcoesLivros extends Padrao {
         tabbedPane.addTab("Cadastrar", panel1);
 
         JComponent panel2 = new JPanel();
-        listar(panel2);
-        editar();
+        list(panel2);
+        edit();
         tabbedPane.addTab("Listar", null, panel2);
 
         frame.add(tabbedPane);
@@ -84,53 +85,53 @@ public class OpcoesLivros extends Padrao {
 
     public JComponent cadastrar(JComponent panel) {
         changed = false;
-        JLabel lbCod = new JLabel(" Código: ");
-        jtCod = new JTextField(45);
+        JLabel lbCode = new JLabel(" Código: ");
+        jtCodeBook = new JTextField(45);
 
-        JLabel lbNome = new JLabel(" Título:    ");
-        jtTitulo = new JTextField(45);
+        JLabel lbTitle = new JLabel(" Título:    ");
+        jtTitle = new JTextField(45);
 
-        JLabel lbAutor = new JLabel(" Autor:     ");
-        jtAutor = new JTextField(45);
+        JLabel lbAuthor = new JLabel(" Autor:     ");
+        jtAuthor = new JTextField(45);
 
-        JLabel lbEditora = new JLabel(" Editora:  ");
-        jtEditora = new UJComboBox(preencheComboBox());
-        jtEditora.setEditable(true);
-        jtEditora.setAutocompletar(true);
-        jtEditora.setPreferredSize(new Dimension(510,30));
+        JLabel lbPublisher = new JLabel(" Editora:  ");
+        jtPublisher = new UJComboBox(fillComboBox());
+        jtPublisher.setEditable(true);
+        jtPublisher.setAutocompletar(true);
+        jtPublisher.setPreferredSize(new Dimension(510, 30));
 
         JLabel lbbox = new JLabel(" Box:        ");
         jtBox = new JTextField(45);
 
-        JLabel lbEstante = new JLabel(" Estante: ");
-        jtEstante = new JTextField(45);
+        JLabel lbBookcase = new JLabel(" Estante: ");
+        jtBookcase = new JTextField(45);
 
         JLabel lbArea = new JLabel(" Área:      ");
         jtArea = new JTextField(45);
 
-        JButton btnSalvar = new JButton("Salvar");
-        btnSalvar.addActionListener(new OpcoesLivros.SalvarActionListener());
-        btnVoltar = new JButton("Voltar");
-        btnVoltar.addActionListener(new OpcoesLivros.VoltarActionListener());
+        btnSave = new JButton("Salvar");
+        btnSave.addActionListener(new OptionsBook.SaveActionListener());
+        btnBack = new JButton("Voltar");
+        btnBack.addActionListener(new OptionsBook.BackActionListener());
 
         JPanel panel0 = new JPanel();
-        panel0.add(lbCod);
-        panel0.add(jtCod);
+        panel0.add(lbCode);
+        panel0.add(jtCodeBook);
         panel0.setLayout(new GridLayout(2, 1));
 
         JPanel panel1 = new JPanel();
-        panel1.add(lbNome);
-        panel1.add(jtTitulo);
+        panel1.add(lbTitle);
+        panel1.add(jtTitle);
         panel1.setLayout(new GridLayout(2, 1));
 
         JPanel panel2 = new JPanel();
-        panel2.add(lbAutor);
-        panel2.add(jtAutor);
+        panel2.add(lbAuthor);
+        panel2.add(jtAuthor);
         panel2.setLayout(new GridLayout(2, 1));
 
         JPanel panel4 = new JPanel();
-        panel4.add(lbEditora);
-        panel4.add(jtEditora);
+        panel4.add(lbPublisher);
+        panel4.add(jtPublisher);
         panel4.setLayout(new GridLayout(2, 1));
 
         JPanel panel3 = new JPanel();
@@ -139,8 +140,8 @@ public class OpcoesLivros extends Padrao {
         panel3.setLayout(new GridLayout(2, 1));
 
         JPanel panel5 = new JPanel();
-        panel5.add(lbEstante);
-        panel5.add(jtEstante);
+        panel5.add(lbBookcase);
+        panel5.add(jtBookcase);
         panel5.setLayout(new GridLayout(2, 1));
 
         JPanel panel6 = new JPanel();
@@ -149,8 +150,8 @@ public class OpcoesLivros extends Padrao {
         panel6.setLayout(new GridLayout(2, 1));
 
         JPanel panel7 = new JPanel();
-        panel7.add(btnSalvar);
-        panel7.add(btnVoltar);
+        panel7.add(btnSave);
+        panel7.add(btnBack);
         panel7.setLayout(new GridLayout(1, 2));
 
         panel.add(panel0);
@@ -166,21 +167,21 @@ public class OpcoesLivros extends Padrao {
         return panel;
     }
 
-    public JComponent listar(JComponent panel) {
+    public JComponent list(JComponent panel) {
         changed = true;
-        tabela = new JTable(modelo);
+        table = new JTable(model);
 
-        modelo.addColumn("Código");
-        modelo.addColumn("Titulo");
-        modelo.addColumn("Autor");
-        modelo.addColumn("Box");
-        modelo.addColumn("Editora");
-        modelo.addColumn("Estante");
-        modelo.addColumn("Área");
+        model.addColumn("Código");
+        model.addColumn("Titulo");
+        model.addColumn("Autor");
+        model.addColumn("Box");
+        model.addColumn("Editora");
+        model.addColumn("Estante");
+        model.addColumn("Área");
 
-        preencheTabela();
+        fillTable();
 
-        final JScrollPane scrollPane = new JScrollPane(tabela);
+        final JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 
@@ -196,24 +197,24 @@ public class OpcoesLivros extends Padrao {
             }
         });
 
-        btnRemover = new JButton("Remover");
-        btnRemover.addActionListener(new OpcoesLivros.RemoverActionListener());
+        btnDelete = new JButton("Remover");
+        btnDelete.addActionListener(new OptionsBook.DeleteActionListener());
 
-        btnVoltar = new JButton("Voltar");
-        btnVoltar.addActionListener(new OpcoesLivros.VoltarActionListener());
+        btnBack = new JButton("Voltar");
+        btnBack.addActionListener(new OptionsBook.BackActionListener());
 
         panel.add(scrollPane);
-        panel.add(btnRemover);
-        panel.add(btnVoltar);
+        panel.add(btnDelete);
+        panel.add(btnBack);
 
         return panel;
     }
 
-    public void preencheTabela() {
+    public void fillTable() {
         try {
-            ResultSet rs = livro.selectAll();
+            ResultSet rs = book.selectAllBooks();
             while (rs.next()) {
-                modelo.addRow(new String[]{
+                model.addRow(new String[]{
                             rs.getString("idlivro"),
                             rs.getString("titulo"),
                             rs.getString("autor"),
@@ -227,45 +228,45 @@ public class OpcoesLivros extends Padrao {
         }
     }
 
-    public Vector preencheComboBox() {
+    public Vector fillComboBox() {
         try {
-            ResultSet rs = editora.selectAll();
-            Vector vetor = new Vector();
-            vetor.add(("--Escolha/Insira uma Editora--"));
+            ResultSet rs = publisher.selectAll();
+            Vector vector = new Vector();
+            vector.add(("--Escolha/Insira uma Editora--"));
 
             while (rs.next()) {
-                vetor.add(rs.getString("nome"));
+                vector.add(rs.getString("nome"));
             }
-            return vetor;
+            return vector;
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
         return null;
     }
 
-    private class SalvarActionListener implements ActionListener {
+    private class SaveActionListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            String cod = jtCod.getText();
-            String titulo = jtTitulo.getText();
-            String autor = jtAutor.getText();
+            String code = jtCodeBook.getText();
+            String title = jtTitle.getText();
+            String author = jtAuthor.getText();
             String box = jtBox.getText();
-            String edit = jtEditora.getSelectedItem().toString();
-            String estante = jtEstante.getText();
+            String publisher = jtPublisher.getSelectedItem().toString();
+            String bookcase = jtBookcase.getText();
             String area = jtArea.getText();
-            if (!cod.isEmpty() && !titulo.isEmpty() && !autor.isEmpty() && !box.isEmpty() && !"--Escolha/Insira uma Editora--".equals(edit) && !estante.isEmpty() && !area.isEmpty()) {
-                if (!livro.selectCod(cod)) {
+            if (!code.isEmpty() && !title.isEmpty() && !author.isEmpty() && !box.isEmpty() && !"--Escolha/Insira uma Editora--".equals(publisher) && !bookcase.isEmpty() && !area.isEmpty()) {
+                if (!book.selectCodeBook(code)) {
                     changed = false;
-                    livro.insertLivro(cod, titulo, autor, box, edit, estante, area);
-                    modelo.addRow(new String[]{cod, titulo, autor, box, edit, estante, area});
+                    book.insertBook(code, title, author, box, publisher, bookcase, area);
+                    model.addRow(new String[]{code, title, author, box, publisher, bookcase, area});
                     JOptionPane.showMessageDialog(frame, "Livro Salvo com Sucesso!!!", "Salvar", JOptionPane.INFORMATION_MESSAGE);
                     tabbedPane.setSelectedIndex(1);
-                    jtCod.setText("");
-                    jtEstante.setText("");
+                    jtCodeBook.setText("");
+                    jtBookcase.setText("");
                     jtBox.setText("");
-                    jtTitulo.setText("");
-                    jtAutor.setText("");
+                    jtTitle.setText("");
+                    jtAuthor.setText("");
                     jtArea.setText("");
                 } else {
                     changed = false;
@@ -277,28 +278,28 @@ public class OpcoesLivros extends Padrao {
         }
     }
 
-    private class VoltarActionListener implements ActionListener {
+    private class BackActionListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
             changed = false;
             frame.setVisible(false);
-            new Principal(aluno, editora, livro, emprestimo);
+            new MainGUI(student, publisher, book, lending);
         }
     }
 
-    private class RemoverActionListener implements ActionListener {
+    private class DeleteActionListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
             changed = false;
-            int resposta = JOptionPane.showConfirmDialog(frame, "Deseja remover registro?", "Remoção", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-            if (resposta == JOptionPane.OK_OPTION) {
-                int linha = tabela.getSelectedRow();
-                if (linha >= 0) {
-                    String codigo = tabela.getValueAt(linha, 0).toString();
-                    livro.deleteLivro(codigo);
-                    modelo.removeRow(linha); //remove a linha
+            int answer = JOptionPane.showConfirmDialog(frame, "Deseja remover registro?", "Remoção", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if (answer == JOptionPane.OK_OPTION) {
+                int row = table.getSelectedRow();
+                if (row >= 0) {
+                    String code = table.getValueAt(row, 0).toString();
+                    book.deleteBook(code);
+                    model.removeRow(row); //remove a linha
 
                     JOptionPane.showMessageDialog(frame,
                             "Registro excluído com sucesso!!!",
@@ -308,49 +309,49 @@ public class OpcoesLivros extends Padrao {
         }
     }
 
-    public void editar() {
-        tabela.getModel().addTableModelListener(new TableModelListener() {
+    public void edit() {
+        table.getModel().addTableModelListener(new TableModelListener() {
 
             @Override
             public void tableChanged(TableModelEvent e) {
                 if (changed) {
-                    int resposta = JOptionPane.showConfirmDialog(frame, "Deseja editar esse registro?", "Edição", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-                    if (resposta == JOptionPane.OK_OPTION) {
-                        int linha = tabela.getSelectedRow();
-                        int coluna = tabela.getSelectedColumn();
-                        String cod = tabela.getValueAt(linha, 0).toString();
-                        String aux = tabela.getValueAt(linha, coluna).toString();
-                        String tipo = null;
-                        if (coluna == 1) {
-                            tipo = "titulo";
+                    int answer = JOptionPane.showConfirmDialog(frame, "Deseja editar esse registro?", "Edição", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+                    if (answer == JOptionPane.OK_OPTION) {
+                        int row = table.getSelectedRow();
+                        int column = table.getSelectedColumn();
+                        String code = table.getValueAt(row, 0).toString();
+                        String value = table.getValueAt(row, column).toString();
+                        String field = null;
+                        if (column == 1) {
+                            field = "titulo";
                         }
-                        if (coluna == 2) {
-                            tipo = "autor";
+                        if (column == 2) {
+                            field = "autor";
                         }
-                        if (coluna == 3) {
-                            tipo = "box";
+                        if (column == 3) {
+                            field = "box";
                         }
-                        if (coluna == 4) {
-                            tipo = "editora";
+                        if (column == 4) {
+                            field = "editora";
                         }
-                        if (coluna == 5) {
-                            tipo = "estante";
+                        if (column == 5) {
+                            field = "estante";
                         }
-                        if (coluna == 6) {
-                            tipo = "area";
+                        if (column == 6) {
+                            field = "area";
                         }
-                        if (coluna == 0) {
+                        if (column == 0) {
                             JOptionPane.showMessageDialog(frame,
                                     "Código não pode ser Modificado!",
                                     "Erro", JOptionPane.ERROR_MESSAGE);
                         }
-                        if (linha >= 0 && coluna != 0) {
-                            if (!aux.isEmpty()) {
-                                if (!"editora".equals(tipo)) {
-                                    livro.updateCampo(cod, aux, tipo);
+                        if (row >= 0 && column != 0) {
+                            if (!value.isEmpty()) {
+                                if (!"editora".equals(field)) {
+                                    book.updateFieldBook(code, value, field);
                                 } else {
-                                    String cod2 = String.valueOf(editora.selectEditora(aux));
-                                    editora.updateCampo(cod2, aux);
+                                    String cod2 = String.valueOf(publisher.selectCodePublisher(value));
+                                    publisher.updateFieldPublisher(cod2, value);
                                 }
                                 JOptionPane.showMessageDialog(frame,
                                         "Registro editado com sucesso!!!",

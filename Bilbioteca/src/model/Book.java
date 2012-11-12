@@ -1,11 +1,8 @@
 package model;
 
 import controler.Database;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Trabalho de .. Professor ..
@@ -13,73 +10,89 @@ import java.util.logging.Logger;
  * @author Alexandre
  * @version 1.0
  */
-public class Livro {
+public class Book {
 
-    private String codigo;
-    private String titulo;
-    private String autor;
+    private String code;
+    private String title;
+    private String author;
     private String box;
-    private String estante;
+    private String bookcase;
     private String area;
-    private Editora editora;
+    private Publisher publisher;
     private Database database;
 
-    public Livro(Database db, Editora ed) {
+    public Book(Database db, Publisher ed) {
         this.database = db;
-        this.editora = ed;
+        this.publisher = ed;
     }
 
     public String getArea() {
         return area;
     }
 
-    public String getAutor() {
-        return autor;
+    public String getAuthor() {
+        return author;
+    }
+
+    public String getBookcase() {
+        return bookcase;
     }
 
     public String getBox() {
         return box;
     }
 
-    public String getCodigo() {
-        return codigo;
+    public String getCode() {
+        return code;
     }
 
-    public String getEstante() {
-        return estante;
+    public Database getDatabase() {
+        return database;
     }
 
-    public String getTitulo() {
-        return titulo;
+    public Publisher getPublisher() {
+        return publisher;
+    }
+
+    public String getTitle() {
+        return title;
     }
 
     public void setArea(String area) {
         this.area = area;
     }
 
-    public void setAutor(String autor) {
-        this.autor = autor;
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public void setBookcase(String bookcase) {
+        this.bookcase = bookcase;
     }
 
     public void setBox(String box) {
         this.box = box;
     }
 
-    public void setCodigo(String codigo) {
-        this.codigo = codigo;
+    public void setCode(String code) {
+        this.code = code;
     }
 
-    public void setEstante(String estante) {
-        this.estante = estante;
+    public void setDatabase(Database database) {
+        this.database = database;
     }
 
-    public void setTitulo(String titulo) {
-        this.titulo = titulo;
+    public void setPublisher(Publisher publisher) {
+        this.publisher = publisher;
     }
 
-    public Boolean selectCod(String cod) {
+    public void setTitle(String title) {
+        this.title = title;
+    }
+    
+    public Boolean selectCodeBook(String codeBook) {
         try {
-            String sql = "SELECT * FROM livros where idlivro ='" + cod + "';";
+            String sql = "SELECT * FROM livros where idlivro ='" + codeBook + "';";
             ResultSet rs;
             rs = this.database.stm.executeQuery(sql);
             if (rs.next()) {
@@ -91,9 +104,9 @@ public class Livro {
         return false;
     }
 
-    public int selectEditoraCod(String codLivro) {
+    public int selectCodePublisher(String codeBook) {
         try {
-            String sql = "SELECT * FROM livros where idlivro ='" + codLivro + "';";
+            String sql = "SELECT * FROM livros where idlivro ='" + codeBook + "';";
             ResultSet rs;
             rs = this.database.stm.executeQuery(sql);
             return rs.getInt("editora_ideditora");
@@ -103,37 +116,37 @@ public class Livro {
         return 0;
     }
 
-    public void updateCampo(String cod, String aux, String tipo) {
+    public void updateFieldBook(String code, String aux, String field) {
         try {
             Class.forName("org.sqlite.JDBC");
             this.database.stm = this.database.conn.createStatement();
-            this.database.stm.executeUpdate("UPDATE livros set " + tipo + " ='" + aux + "' where idlivro = '" + cod + "';");
+            this.database.stm.executeUpdate("UPDATE livros set " + field + " ='" + aux + "' where idlivro = '" + code + "';");
         } catch (ClassNotFoundException | SQLException ex) {
             System.out.println(ex.getMessage());
         }
     }
 
-    public void deleteLivro(String cod) {
+    public void deleteBook(String codeBook) {
         try {
             Class.forName("org.sqlite.JDBC");
             this.database.stm = this.database.conn.createStatement();
-            this.database.stm.executeUpdate("DELETE FROM livros where idlivro ='" + cod + "';");
+            this.database.stm.executeUpdate("DELETE FROM livros where idlivro ='" + codeBook + "';");
         } catch (ClassNotFoundException | SQLException ex) {
             System.out.println(ex.getMessage());
         }
     }
 
-    public boolean insertLivro(String codigo, String titulo, String autor, String box, String editora, String estante, String area) {
+    public boolean insertBook(String code, String title, String author, String box, String publisher, String bookcase, String area) {
         try {
             Class.forName("org.sqlite.JDBC");
             this.database.stm = this.database.conn.createStatement();
-            int cod = this.editora.selectEditora(editora);
+            int cod = this.publisher.selectCodePublisher(publisher);
             System.out.println(cod);
             if (cod == 0) {
-                this.database.stm.executeUpdate("INSERT INTO editoras(nome) VALUES ('" + editora + "');");
-                cod = this.editora.selectEditora(editora);
+                this.database.stm.executeUpdate("INSERT INTO editoras(nome) VALUES ('" + publisher + "');");
+                cod = this.publisher.selectCodePublisher(publisher);
             }
-            this.database.stm.executeUpdate("INSERT INTO livros VALUES ('" + codigo + "','" + cod + "','" + autor + "','" + titulo + "','" + box + "','" + estante + "','" + area + "');");
+            this.database.stm.executeUpdate("INSERT INTO livros VALUES ('" + code + "','" + cod + "','" + author + "','" + title + "','" + box + "','" + bookcase + "','" + area + "');");
             return true;
         } catch (ClassNotFoundException | SQLException ex) {
             System.out.println(ex.getMessage());
@@ -141,7 +154,7 @@ public class Livro {
         return false;
     }
 
-    public ResultSet selectAll() {
+    public ResultSet selectAllBooks() {
         try {
             String sql = "SELECT l.*, e.nome AS editora FROM livros l, editoras e WHERE e.ideditora = l.editora_ideditora ORDER BY idlivro ASC";
             ResultSet rs = this.database.stm.executeQuery(sql);

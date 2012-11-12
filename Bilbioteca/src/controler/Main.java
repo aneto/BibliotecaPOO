@@ -2,7 +2,7 @@ package controler;
 
 import java.sql.SQLException;
 import model.*;
-import view.Principal;
+import view.MainGUI;
 
 /**
  * Trabalho de .. Professor ..
@@ -18,11 +18,11 @@ public class Main {
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
         Database db = new Database();
 	
-        Aluno aluno           = new Aluno(db);
-        Editora editora       = new Editora(db);
-        Livro livro           = new Livro(db, editora);
-        Emprestimo emprestimo = new Emprestimo(db);
+        Student    student    = new Student(db);
+        Publisher  publisher  = new Publisher(db);
+        Book       book       = new Book(db, publisher);
+        Lending    lending    = new Lending(db);
 
-        new Principal(aluno, editora, livro, emprestimo);
+        new MainGUI(student, publisher, book, lending);
     }
 }

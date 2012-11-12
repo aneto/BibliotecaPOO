@@ -1,10 +1,8 @@
 package view;
 
 import com.toedter.calendar.JCalendar;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.util.Date;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -14,9 +12,9 @@ import javax.swing.JPanel;
  * @author Alexandre
  * @version 1.0
  */
-public class Calendario extends Padrao {
+public class Calendar extends Template {
 
-    public Calendario() {
+    public Calendar() {
         super();
         init();
         frame.setVisible(true);
@@ -24,10 +22,9 @@ public class Calendario extends Padrao {
     
     public void init(){
         JCalendar calendar = new JCalendar();
-        calendar.setPreferredSize(new Dimension(frame.getWidth()-30, frame.getHeight()-30));
+        calendar.setPreferredSize(new Dimension(frame.getWidth()-20, frame.getHeight()));
         
         JPanel panel = new JPanel();
-        panel.add(new JLabel("Calendario de Tarefas"));
         panel.add(calendar);
         panel.setLayout(new FlowLayout(FlowLayout.CENTER));
         frame.add(panel);

@@ -10,38 +10,46 @@ import java.sql.SQLException;
  * @author Alexandre
  * @version 1.0
  */
-public class Editora {
+public class Publisher {
 
-    private Integer id;
-    private String nome;
+    private Integer codePublisher;
+    private String name;
     private Database database;
 
-    public Editora(Database db) {
+    public Publisher(Database db) {
         this.database = db;
     }
 
-    public Integer getId() {
-        return id;
+    public Integer getCodePublisher() {
+        return codePublisher;
     }
 
-    public String getNome() {
-        return nome;
+    public Database getDatabase() {
+        return database;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public String getName() {
+        return name;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
+    public void setCodePublisher(Integer codePublisher) {
+        this.codePublisher = codePublisher;
     }
 
-    public boolean insertEditora(String nome) {
+    public void setDatabase(Database database) {
+        this.database = database;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    public boolean insertPublisher(String name) {
         try {
             Class.forName("org.sqlite.JDBC");
             this.database.stm = this.database.conn.createStatement();
-            if (selectEditora(nome) == 0) {
-                this.database.stm.executeUpdate("INSERT INTO editoras(nome) VALUES ('" + nome + "');");
+            if (selectCodePublisher(name) == 0) {
+                this.database.stm.executeUpdate("INSERT INTO editoras(nome) VALUES ('" + name + "');");
                 return true;
             }
         } catch (ClassNotFoundException | SQLException ex) {
@@ -50,9 +58,9 @@ public class Editora {
         return false;
     }
 
-    public int selectEditora(String nome) {
+    public int selectCodePublisher(String name) {
         try {
-            String sql = "Select * FROM editoras WHERE nome = '" + nome + "';";
+            String sql = "Select * FROM editoras WHERE nome = '" + name + "';";
             ResultSet rs = this.database.stm.executeQuery(sql);
             if (rs.next()) {
                 return rs.getInt("ideditora");
@@ -63,7 +71,7 @@ public class Editora {
         return 0;
     }
 
-    public void updateCampo(String cod, String aux) {
+    public void updateFieldPublisher(String cod, String aux) {
         try {
             Class.forName("org.sqlite.JDBC");
             this.database.stm = this.database.conn.createStatement();
@@ -73,7 +81,7 @@ public class Editora {
         }
     }
 
-    public String selectEditoraCod(int cod) {
+    public String selectCodePublisher(int cod) {
         try {
             String sql = "Select * FROM editoras WHERE ideditora = '" + cod + "';";
             ResultSet rs = this.database.stm.executeQuery(sql);
