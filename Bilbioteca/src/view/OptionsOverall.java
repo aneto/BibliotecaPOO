@@ -9,13 +9,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -54,6 +53,7 @@ public class OptionsOverall {
     };
     private JTable table;
     private JTextField jtSearch;
+    private UJComboBox jtCodeStudentLending;
 
     public OptionsOverall(Student student, Book book, Lending lending) {
         this.student = student;
@@ -184,6 +184,22 @@ public class OptionsOverall {
         return null;
     }
 
+    public Vector fillComboBoxLending() {
+        try {
+            ResultSet rs = lending.selectAll();
+            Vector vector = new Vector();
+            vector.add(("--Escolha um CGM--"));
+
+            while (rs.next()) {
+                vector.add(rs.getString("Alunos_CGM"));
+            }
+            return vector;
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+        return null;
+    }
+
     private class SaveActionListener implements ActionListener {
 
         @Override
@@ -196,6 +212,7 @@ public class OptionsOverall {
             if (!"--Escolha um Aluno--".equals(codeStudent) && !"--Escolha um Livro--".equals(codeBook) && !dtDeparture.isEmpty() && !dtReturn.isEmpty()) {
                 if (dateReturn.getDate().after(dateDeparture.getDate())) {
                     lending.insertLending(codeStudent, codeBook, dateDeparture.getDate(), dateReturn.getDate(), "Emprestimo");
+                    jtCodeStudentLending.addItem(codeStudent);
                     JOptionPane.showMessageDialog(frameOverall, "Emprestimo Salvo com Sucesso!!!", "Emprestimo", JOptionPane.INFORMATION_MESSAGE);
                 } else {
                     JOptionPane.showMessageDialog(frameOverall, "Data de Devolução deve ser DEPOIS da Data de Saída!", "Erro", JOptionPane.ERROR_MESSAGE);
@@ -207,6 +224,19 @@ public class OptionsOverall {
     }
 
     private JComponent renovation(JComponent panel) {
+        JLabel lbCodeStudentLending = new JLabel(" CGM:");
+        jtCodeStudentLending = new UJComboBox(fillComboBoxLending());
+        jtCodeStudentLending.setAutocompletar(true);
+        
+        
+
+        JPanel panel0 = new JPanel();
+        panel0.add(lbCodeStudentLending);
+        panel0.add(jtCodeStudentLending);
+        panel0.setLayout(new GridLayout(2, 1));
+
+        panel.add(panel0);
+
         return panel;
 
     }
@@ -247,9 +277,9 @@ public class OptionsOverall {
             model.addColumn("Data Devolução");
             model.addColumn("Status");
         }
-         
+
         table.getColumnModel().getColumn(0).setPreferredWidth(0);
-        table.getTableHeader().getColumnModel().getColumn(0).setMaxWidth( 0 ); 
+        table.getTableHeader().getColumnModel().getColumn(0).setMaxWidth(0);
         scrollPane = new JScrollPane(table);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -329,6 +359,8 @@ public class OptionsOverall {
 
                     lending.deleteLending2(code);
                     model.removeRow(row); //remove a linha
+                    jtCodeStudentLending.removeAllItems();
+                    jtCodeStudentLending.addItem(fillComboBoxLending());
 
                     JOptionPane.showMessageDialog(frameOverall,
                             "Registro excluído com sucesso!!!",

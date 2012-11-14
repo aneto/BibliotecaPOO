@@ -3,6 +3,7 @@ package model;
 import controler.Database;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -73,10 +74,12 @@ public class Lending {
     }
     
     public void insertLending(String codeStudent, String title, Date dateDeparture, Date dateReturn, String status) {
+        String dtDeparture = new SimpleDateFormat("dd/MM/yyyy").format(dateDeparture);
+        String dtReturn = new SimpleDateFormat("dd/MM/yyyy").format(dateReturn);
         try {
             Class.forName("org.sqlite.JDBC");
             this.database.stm = this.database.conn.createStatement();
-            this.database.stm.executeUpdate("INSERT INTO emprestimos(livro_idlivro, Alunos_CGM,dataSaida,dataDevolucao, status) VALUES (" + title + ", '" + codeStudent + "','" + dateDeparture + "','" + dateReturn + "','" + status + "')");
+            this.database.stm.executeUpdate("INSERT INTO emprestimos(livro_idlivro, Alunos_CGM,dataSaida,dataDevolucao, status) VALUES (" + title + ", '" + codeStudent + "','" + dtDeparture + "','" + dtReturn + "','" + status + "')");
         } catch (ClassNotFoundException | SQLException ex) {
             System.out.println(ex.getMessage());
         }
@@ -85,6 +88,18 @@ public class Lending {
     public ResultSet selectViewLending(String codeStudent) {
         try {
             String sql = "SELECT * FROM viewEmprestimos WHERE Alunos_CGM ='"+codeStudent+"'";
+            ResultSet rs = this.database.stm.executeQuery(sql);
+
+            return rs;
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+        return null;
+    }
+    
+    public ResultSet selectAll() {
+        try {
+            String sql = "SELECT * FROM viewEmprestimos;";
             ResultSet rs = this.database.stm.executeQuery(sql);
 
             return rs;

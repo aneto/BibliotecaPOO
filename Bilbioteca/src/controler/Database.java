@@ -34,13 +34,13 @@ public class Database {
      * Cria as Tabelas da Biblioteca, caso não existão.
      */
     public void initDB() throws SQLException {
-        //this.stm.executeUpdate("Drop table alunos");
         //this.stm.executeUpdate("Drop table emprestimos");
+        this.stm.executeUpdate("Drop view viewEmprestimos");
         this.stm.executeUpdate("CREATE TABLE IF NOT EXISTS alunos (CGM VARCHAR(40) NOT NULL , nome VARCHAR(60) NOT NULL , filiacao VARCHAR(60) NOT NULL , telefone VARCHAR(20) NULL, serie VARCHAR(45) NULL,endereco varchar(100) null, PRIMARY KEY (CGM));");
         //this.stm.executeUpdate("CREATE TABLE IF NOT EXISTS endereco (idAluno INT NOT NULL ,nomeRua VARCHAR(60) NULL ,bairro VARCHAR(60) NULL ,numero INT NULL ,complemento VARCHAR(45) NULL ,PRIMARY KEY (idAluno) ,CONSTRAINT fk_Endereco_Alunos FOREIGN KEY (idAluno ) REFERENCES alunos (CGM));");
         this.stm.executeUpdate("CREATE TABLE IF NOT EXISTS editoras (ideditora integer PRIMARY KEY AUTOINCREMENT, nome VARCHAR(45) NOT NULL);");
         this.stm.executeUpdate("CREATE TABLE IF NOT EXISTS livros (idlivro VARCHAR(45) NOT NULL ,editora_ideditora INT NOT NULL ,autor VARCHAR(45) NOT NULL ,titulo VARCHAR(45) NOT NULL ,box VARCHAR(45) NOT NULL ,estante VARCHAR(45) NOT NULL ,area VARCHAR(45) NOT NULL ,PRIMARY KEY (idlivro), CONSTRAINT fk_livro_editora1 FOREIGN KEY (editora_ideditora ) REFERENCES editoras (ideditora ));");
-        this.stm.executeUpdate("CREATE TABLE IF NOT EXISTS emprestimos (idemprestimo integer PRIMARY KEY AUTOINCREMENT, livro_idlivro VARCHAR(45) NOT NULL ,Alunos_CGM VARCHAR(40) NOT NULL ,dataSaida Date NULL ,dataDevolucao DATE NULL ,status VARCHAR(45) NULL, CONSTRAINT fk_livro_has_Alunos_livro1 FOREIGN KEY (livro_idlivro ) REFERENCES livros (idlivro ), CONSTRAINT fk_livro_has_Alunos_Alunos1 FOREIGN KEY (Alunos_CGM ) REFERENCES alunos (CGM ))");
-        this.stm.executeUpdate("CREATE VIEW IF NOT EXISTS 'viewEmprestimos' AS SELECT e.*, a.nome AS nome, strftime('%d/%m/%Y', e.dataSaida) AS dataSaida FROM emprestimos e, alunos a WHERE e.Alunos_CGM = a.CGM ORDER BY a.CGM ASC");
+        this.stm.executeUpdate("CREATE TABLE IF NOT EXISTS emprestimos (idemprestimo integer PRIMARY KEY AUTOINCREMENT, livro_idlivro VARCHAR(45) NOT NULL ,Alunos_CGM VARCHAR(40) NOT NULL ,dataSaida Datetime NULL ,dataDevolucao DATE NULL ,status VARCHAR(45) NULL, CONSTRAINT fk_livro_has_Alunos_livro1 FOREIGN KEY (livro_idlivro ) REFERENCES livros (idlivro ), CONSTRAINT fk_livro_has_Alunos_Alunos1 FOREIGN KEY (Alunos_CGM ) REFERENCES alunos (CGM ))");
+        this.stm.executeUpdate("CREATE VIEW IF NOT EXISTS 'viewEmprestimos' AS SELECT e.*, a.nome AS nome, strftime('%d/%m/%Y', e.dataSaida) AS dataSaida1 FROM emprestimos e, alunos a WHERE e.Alunos_CGM = a.CGM ORDER BY a.CGM ASC");
     }
 }

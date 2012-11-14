@@ -178,12 +178,14 @@ public class OptionsStudent {
         final JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-
+        
+        
         frameStudent.addComponentListener(new ComponentAdapter() {
 
             @Override
             public void componentResized(ComponentEvent e) {
                 scrollPane.setPreferredSize(new Dimension(frameStudent.getWidth() - 100, frameStudent.getHeight() - 150));
+            
             }
         });
 
