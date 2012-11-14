@@ -11,14 +11,12 @@ import java.awt.event.ComponentEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import model.Book;
-import model.Lending;
 import model.Publisher;
-import model.Student;
 
 /**
  * Trabalho de .. Professor ..
@@ -26,11 +24,11 @@ import model.Student;
  * @author Alexandre
  * @version 1.0
  */
-public class OptionsBook extends Template {
+public class OptionsBook {
 
-    private Student student;
+    public JDialog frameBook;
+    private JTabbedPane tabbedPane;
     private Book book;
-    private Lending lending;
     private Publisher publisher;
     private JTextField jtCodeBook;
     private JTextField jtTitle;
@@ -39,52 +37,56 @@ public class OptionsBook extends Template {
     private JTextField jtBookcase;
     private JTextField jtArea;
     private UJComboBox jtPublisher;
-    private JButton btnSave;
-    private JButton btnDelete;
-    private JButton btnBack;
+
     private JTable table;
-    private JTabbedPane tabbedPane;
-    private Boolean changed = false;
     private DefaultTableModel model = new DefaultTableModel() {
 
         @Override
         public boolean isCellEditable(int rowIndex, int mColIndex) {
-            if (mColIndex == 0) {
-                return false;
-            }
             return true;
         }
     };
+    private UJComboBox jtSearchEdit;
 
-    public OptionsBook(Student student, Publisher publisher, Book book, Lending lending) {
-        super();
-        this.student = student;
+    public OptionsBook(Book book, Publisher publisher) {
         this.book = book;
         this.publisher = publisher;
-        this.lending = lending;
-        init();
     }
 
     public void init() {
-        frame.setTitle("Cadastrar Livros");
+        frameBook = new JDialog();
+        frameBook.setTitle("Cadastrar Livros");
+        frameBook.setModal(true);
+
+        Template.lookAndFeel();
+        initComponents();
+
+        frameBook.setSize(800, 600);
+        frameBook.setFocusable(true);
+        frameBook.setLocationRelativeTo(null); //centraliza a tela 
+        frameBook.setVisible(true);
+    }
+
+    private void initComponents() {
         tabbedPane = new JTabbedPane();
         //ImageIcon icon = createImageIcon("images/middle.gif");
 
         JComponent panel1 = new JPanel();
-        cadastrar(panel1);
+        register(panel1);
         tabbedPane.addTab("Cadastrar", panel1);
 
         JComponent panel2 = new JPanel();
-        list(panel2);
-        edit();
-        tabbedPane.addTab("Listar", null, panel2);
+        edit(panel2);
+        tabbedPane.addTab("Editar", panel2);
 
-        frame.add(tabbedPane);
-        frame.setVisible(true);
+        JComponent panel3 = new JPanel();
+        list(panel3);
+        tabbedPane.addTab("Listar", panel3);
+
+        frameBook.add(tabbedPane);
     }
 
-    public JComponent cadastrar(JComponent panel) {
-        changed = false;
+    private JComponent register(JComponent panel) {
         JLabel lbCode = new JLabel(" Código: ");
         jtCodeBook = new JTextField(45);
 
@@ -108,11 +110,9 @@ public class OptionsBook extends Template {
 
         JLabel lbArea = new JLabel(" Área:      ");
         jtArea = new JTextField(45);
-
-        btnSave = new JButton("Salvar");
+        
+        JButton btnSave = new JButton("Salvar");
         btnSave.addActionListener(new OptionsBook.SaveActionListener());
-        btnBack = new JButton("Voltar");
-        btnBack.addActionListener(new OptionsBook.BackActionListener());
 
         JPanel panel0 = new JPanel();
         panel0.add(lbCode);
@@ -151,8 +151,143 @@ public class OptionsBook extends Template {
 
         JPanel panel7 = new JPanel();
         panel7.add(btnSave);
-        panel7.add(btnBack);
+        panel7.setLayout(new GridLayout(1, 1));
+
+        panel.add(panel0);
+        panel.add(panel1);
+        panel.add(panel2);
+        panel.add(panel4);
+        panel.add(panel3);
+        panel.add(panel5);
+        panel.add(panel6);
+        panel.add(panel7);
+        panel.setLayout(new FlowLayout(FlowLayout.CENTER, 1000, 13));
+
+        return panel;
+
+    }
+
+    public Vector fillComboBox() {
+        try {
+            ResultSet rs = publisher.selectAll();
+            Vector vector = new Vector();
+            vector.add(("--Escolha/Insira uma Editora--"));
+
+            while (rs.next()) {
+                vector.add(rs.getString("nome"));
+            }
+            return vector;
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+        return null;
+    }
+
+    private JComponent edit(JComponent panel) {
+        JLabel lbSearchEdit = new JLabel("CGM Aluno:  ");
+        jtSearchEdit = new UJComboBox(fillComboBoxBook());
+        jtSearchEdit.setAutocompletar(true);
+        jtSearchEdit.setPreferredSize(new Dimension(510, 30));
+        
+        JLabel lbTitle = new JLabel("Titulo: ");
+        final JTextField jtEditTitle = new JTextField(45);
+
+        JLabel lbAuthor = new JLabel("Autor: ");
+        final JTextField jtEditAuthor = new JTextField(45);
+
+        JLabel lbPublisher = new JLabel("Editora: ");
+        final JTextField jtEditPublisher = new JTextField(45);
+
+        JLabel lbBox = new JLabel("Box: ");
+        final JTextField jtEditBox = new JTextField(45);
+        
+        JLabel lbBookcase = new JLabel("Estante: ");
+        final JTextField jtEditBookcase = new JTextField(45);
+        
+        JLabel lbArea = new JLabel("Área: ");
+        final JTextField jtEditArea = new JTextField(45);
+        
+        JButton btnSave = new JButton("Salvar");
+        ActionListener update = new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!jtEditTitle.getText().isEmpty() && !jtEditAuthor.getText().isEmpty() && !jtEditPublisher.getText().isEmpty() && !jtEditBox.getText().isEmpty() && !jtEditBookcase.getText().isEmpty() && !jtEditBox.getText().isEmpty() && !jtEditArea.getText().isEmpty() && !"--Escolha um Livro--".equals(jtSearchEdit.getSelectedItem().toString())) {
+                    //student.updateStudent(jtSearchEdit.getSelectedItem().toString(), jtEditName.getText(), jtEditSerie.getText(), jtEditFiliation.getText(), jtEditAddress.getText(), jtEditPhone.getText());
+                    JOptionPane.showMessageDialog(frameBook, "Registro Atualizado com Sucesso!!!", "Editar", JOptionPane.INFORMATION_MESSAGE);
+                    clearTable();
+                    fillTable();
+                    tabbedPane.setSelectedIndex(2);
+
+                } else {
+                    JOptionPane.showMessageDialog(frameBook, "Não Pode ter campos em Branco ou Não Selecionados!", "Erro", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        };
+
+        btnSave.addActionListener(update);
+        
+        
+        JPanel panel0 = new JPanel();
+        panel0.add(lbSearchEdit);
+        panel0.add(jtSearchEdit);
+        panel0.setLayout(new GridLayout(2, 1));
+        
+        JPanel panel1 = new JPanel();
+        panel1.add(lbTitle);
+        panel1.add(jtEditTitle);
+        panel1.setLayout(new GridLayout(2, 1));
+
+        JPanel panel2 = new JPanel();
+        panel2.add(lbAuthor);
+        panel2.add(jtEditAuthor);
+        panel2.setLayout(new GridLayout(2, 1));
+
+        JPanel panel3 = new JPanel();
+        panel3.add(lbPublisher);
+        panel3.add(jtEditPublisher);
+        panel3.setLayout(new GridLayout(2, 1));
+
+        JPanel panel4 = new JPanel();
+        panel4.add(lbBox);
+        panel4.add(jtEditBox);
+        panel4.setLayout(new GridLayout(2, 1));
+        
+        JPanel panel5 = new JPanel();
+        panel5.add(lbBookcase);
+        panel5.add(jtEditBookcase);
+        panel5.setLayout(new GridLayout(2, 1));
+        
+        JPanel panel6 = new JPanel();
+        panel6.add(lbArea);
+        panel6.add(jtEditArea);
+        panel6.setLayout(new GridLayout(2, 1));
+        
+        JPanel panel7 = new JPanel();
+        panel7.add(btnSave);
         panel7.setLayout(new GridLayout(1, 2));
+        
+        panel.setLayout(new FlowLayout(FlowLayout.CENTER, 1000, 13));
+
+        jtSearchEdit.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent actionEvent) {
+                try {
+                    ResultSet rs = book.selectBooks(jtSearchEdit.getSelectedItem().toString());
+                    while (rs.next()) {
+                        jtEditTitle.setText(rs.getString("titulo"));
+                        jtEditAuthor.setText(rs.getString("autor"));
+                        jtEditPublisher.setText(rs.getString("editora"));
+                        jtEditBox.setText(rs.getString("box"));
+                        jtEditBookcase.setText(rs.getString("estante"));
+                        jtEditArea.setText(rs.getString("area"));
+                    }
+                } catch (SQLException ex) {
+                    Logger.getLogger(OptionsStudent.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+            }
+        });
 
         panel.add(panel0);
         panel.add(panel1);
@@ -162,50 +297,62 @@ public class OptionsBook extends Template {
         panel.add(panel5);
         panel.add(panel6);
         panel.add(panel7);
-        panel.setLayout(new FlowLayout(FlowLayout.CENTER, 1000, 13));
-
+        
         return panel;
     }
+    
+    
+    public Vector fillComboBoxBook() {
+        try {
+            ResultSet rs = book.selectAllBooks();
+            Vector vector = new Vector();
+            vector.add(("--Escolha um Livro--"));
 
-    public JComponent list(JComponent panel) {
-        changed = true;
-        table = new JTable(model);
+            while (rs.next()) {
+                vector.add(rs.getString("idlivro"));
+            }
+            return vector;
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+        return null;
+    }
 
-        model.addColumn("Código");
-        model.addColumn("Titulo");
-        model.addColumn("Autor");
-        model.addColumn("Box");
-        model.addColumn("Editora");
-        model.addColumn("Estante");
-        model.addColumn("Área");
+    private JComponent list(JComponent panel) {
+        if (table == null) {
+            table = new JTable(model);
 
-        fillTable();
+            model.addColumn("Código");
+            model.addColumn("Titulo");
+            model.addColumn("Autor");
+            model.addColumn("Box");
+            model.addColumn("Editora");
+            model.addColumn("Estante");
+            model.addColumn("Área");
+
+            fillTable();
+        }
 
         final JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 
-        frame.addComponentListener(new ComponentAdapter() {
+        frameBook.addComponentListener(new ComponentAdapter() {
 
             @Override
             public void componentResized(ComponentEvent e) {
-                scrollPane.setPreferredSize(new Dimension(frame.getWidth() - 100, frame.getHeight() - 150));
+                scrollPane.setPreferredSize(new Dimension(frameBook.getWidth() - 100, frameBook.getHeight() - 150));
             }
 
             public void componentMoved(java.awt.event.ComponentEvent e) {
-                scrollPane.setPreferredSize(new Dimension(frame.getWidth() - 100, frame.getHeight() - 150));
+                scrollPane.setPreferredSize(new Dimension(frameBook.getWidth() - 100, frameBook.getHeight() - 150));
             }
         });
-
-        btnDelete = new JButton("Remover");
+        JButton btnDelete = new JButton("Remover");
         btnDelete.addActionListener(new OptionsBook.DeleteActionListener());
-
-        btnBack = new JButton("Voltar");
-        btnBack.addActionListener(new OptionsBook.BackActionListener());
 
         panel.add(scrollPane);
         panel.add(btnDelete);
-        panel.add(btnBack);
 
         return panel;
     }
@@ -227,21 +374,9 @@ public class OptionsBook extends Template {
             System.out.println(ex.getMessage());
         }
     }
-
-    public Vector fillComboBox() {
-        try {
-            ResultSet rs = publisher.selectAll();
-            Vector vector = new Vector();
-            vector.add(("--Escolha/Insira uma Editora--"));
-
-            while (rs.next()) {
-                vector.add(rs.getString("nome"));
-            }
-            return vector;
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
-        }
-        return null;
+    
+    public void clearTable() {
+        model.setNumRows(0);
     }
 
     private class SaveActionListener implements ActionListener {
@@ -257,11 +392,11 @@ public class OptionsBook extends Template {
             String area = jtArea.getText();
             if (!code.isEmpty() && !title.isEmpty() && !author.isEmpty() && !box.isEmpty() && !"--Escolha/Insira uma Editora--".equals(publisher) && !bookcase.isEmpty() && !area.isEmpty()) {
                 if (!book.selectCodeBook(code)) {
-                    changed = false;
                     book.insertBook(code, title, author, box, publisher, bookcase, area);
                     model.addRow(new String[]{code, title, author, box, publisher, bookcase, area});
-                    JOptionPane.showMessageDialog(frame, "Livro Salvo com Sucesso!!!", "Salvar", JOptionPane.INFORMATION_MESSAGE);
-                    tabbedPane.setSelectedIndex(1);
+                    JOptionPane.showMessageDialog(frameBook, "Livro Salvo com Sucesso!!!", "Salvar", JOptionPane.INFORMATION_MESSAGE);
+                    jtSearchEdit.addItem(code);
+                    tabbedPane.setSelectedIndex(2);
                     jtCodeBook.setText("");
                     jtBookcase.setText("");
                     jtBox.setText("");
@@ -269,22 +404,11 @@ public class OptionsBook extends Template {
                     jtAuthor.setText("");
                     jtArea.setText("");
                 } else {
-                    changed = false;
-                    JOptionPane.showMessageDialog(frame, "Esse Código já Existe!", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(frameBook, "Esse Código já Existe!", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             } else {
-                JOptionPane.showMessageDialog(frame, "Não Pode ter campos em Branco ou Não Selecionados!", "Erro", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(frameBook, "Não Pode ter campos em Branco ou Não Selecionados!", "Erro", JOptionPane.ERROR_MESSAGE);
             }
-        }
-    }
-
-    private class BackActionListener implements ActionListener {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            changed = false;
-            frame.setVisible(false);
-            new MainGUI(student, publisher, book, lending);
         }
     }
 
@@ -292,8 +416,7 @@ public class OptionsBook extends Template {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            changed = false;
-            int answer = JOptionPane.showConfirmDialog(frame, "Deseja remover registro?", "Remoção", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+            int answer = JOptionPane.showConfirmDialog(frameBook, "Deseja remover registro?", "Remoção", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
             if (answer == JOptionPane.OK_OPTION) {
                 int row = table.getSelectedRow();
                 if (row >= 0) {
@@ -301,68 +424,11 @@ public class OptionsBook extends Template {
                     book.deleteBook(code);
                     model.removeRow(row); //remove a linha
 
-                    JOptionPane.showMessageDialog(frame,
+                    JOptionPane.showMessageDialog(frameBook,
                             "Registro excluído com sucesso!!!",
                             "Remover", JOptionPane.INFORMATION_MESSAGE);
                 }
             }
         }
-    }
-
-    public void edit() {
-        table.getModel().addTableModelListener(new TableModelListener() {
-
-            @Override
-            public void tableChanged(TableModelEvent e) {
-                if (changed) {
-                    int answer = JOptionPane.showConfirmDialog(frame, "Deseja editar esse registro?", "Edição", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-                    if (answer == JOptionPane.OK_OPTION) {
-                        int row = table.getSelectedRow();
-                        int column = table.getSelectedColumn();
-                        String code = table.getValueAt(row, 0).toString();
-                        String value = table.getValueAt(row, column).toString();
-                        String field = null;
-                        if (column == 1) {
-                            field = "titulo";
-                        }
-                        if (column == 2) {
-                            field = "autor";
-                        }
-                        if (column == 3) {
-                            field = "box";
-                        }
-                        if (column == 4) {
-                            field = "editora";
-                        }
-                        if (column == 5) {
-                            field = "estante";
-                        }
-                        if (column == 6) {
-                            field = "area";
-                        }
-                        if (column == 0) {
-                            JOptionPane.showMessageDialog(frame,
-                                    "Código não pode ser Modificado!",
-                                    "Erro", JOptionPane.ERROR_MESSAGE);
-                        }
-                        if (row >= 0 && column != 0) {
-                            if (!value.isEmpty()) {
-                                if (!"editora".equals(field)) {
-                                    book.updateFieldBook(code, value, field);
-                                } else {
-                                    String cod2 = String.valueOf(publisher.selectCodePublisher(value));
-                                    publisher.updateFieldPublisher(cod2, value);
-                                }
-                                JOptionPane.showMessageDialog(frame,
-                                        "Registro editado com sucesso!!!",
-                                        "Editar", JOptionPane.INFORMATION_MESSAGE);
-                            } else {
-                                JOptionPane.showMessageDialog(frame, "Não Pode ter campos em Branco ou Não Selecionados!", "Erro", JOptionPane.ERROR_MESSAGE);
-                            }
-                        }
-                    }
-                }
-            }
-        });
     }
 }

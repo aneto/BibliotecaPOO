@@ -76,7 +76,7 @@ public class Lending {
         try {
             Class.forName("org.sqlite.JDBC");
             this.database.stm = this.database.conn.createStatement();
-            this.database.stm.executeUpdate("INSERT INTO emprestimos VALUES (" + title + ", '" + codeStudent + "','" + dateDeparture + "','" + dateReturn + "','" + status + "')");
+            this.database.stm.executeUpdate("INSERT INTO emprestimos(livro_idlivro, Alunos_CGM,dataSaida,dataDevolucao, status) VALUES (" + title + ", '" + codeStudent + "','" + dateDeparture + "','" + dateReturn + "','" + status + "')");
         } catch (ClassNotFoundException | SQLException ex) {
             System.out.println(ex.getMessage());
         }
@@ -99,6 +99,16 @@ public class Lending {
             Class.forName("org.sqlite.JDBC");
             this.database.stm = this.database.conn.createStatement();
             this.database.stm.executeUpdate("DELETE FROM emprestimos where Alunos_CGM ='" + codeStudent + "' AND dataSaida ='" + dateDeparture + "' AND dataDevolucao ='" + dateReturn + "' AND status = 'Emprestimo';");
+        } catch (ClassNotFoundException | SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+    
+    public void deleteLending2(String idLending){
+        try {
+            Class.forName("org.sqlite.JDBC");
+            this.database.stm = this.database.conn.createStatement();
+            this.database.stm.executeUpdate("DELETE FROM emprestimos where idemprestimo ='" + idLending + "';");
         } catch (ClassNotFoundException | SQLException ex) {
             System.out.println(ex.getMessage());
         }

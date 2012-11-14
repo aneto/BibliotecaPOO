@@ -1,8 +1,8 @@
+
 package view;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JFrame;
 import javax.swing.UIManager;
 
 /**
@@ -13,21 +13,7 @@ import javax.swing.UIManager;
  */
 public class Template {
     
-    protected JFrame frame;
-    
-    public Template() {
-        frame = new JFrame("BibliotQAM - Gerenciamento da Biblioteca");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        lookAndFeel();
-        
-        frame.pack();
-        frame.setSize(800, 600);
-        //frame.setResizable(false);
-        frame.setLocationRelativeTo(null); //centraliza a tela 
-    }
-
-    private void lookAndFeel() {
+    public static void lookAndFeel() {
         int i = 1;
         try {
             UIManager.LookAndFeelInfo[] looks = UIManager.getInstalledLookAndFeels();
@@ -36,4 +22,5 @@ public class Template {
             Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
 }

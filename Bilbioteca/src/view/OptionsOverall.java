@@ -14,7 +14,6 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Vector;
@@ -24,7 +23,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import model.Book;
 import model.Lending;
-import model.Publisher;
 import model.Student;
 
 /**
@@ -33,26 +31,19 @@ import model.Student;
  * @author Alexandre
  * @version 1.0
  */
-public class OptionsOverall extends Template {
+public class OptionsOverall {
 
-    private Student student;
-    private Book book;
-    private Lending lending;
-    private Publisher publisher;
+    public JDialog frameOverall;
     private JTabbedPane tabbedPane;
+    private Book book;
+    private Student student;
+    private Lending lending;
     private UJComboBox jtCodeStudent;
     private UJComboBox jtBook;
-    private Calendar dateCurrent = Calendar.getInstance();
     private JDateChooser dateDeparture;
     private JDateChooser dateReturn;
-    private JButton btnBack;
-    private JTextField jtSearch;
-    private JButton btnSearch;
-    private JPanel panelSearch;
-    private JTable table;
-    private JLabel jtNameStudent;
+    private java.util.Calendar dateCurrent = java.util.Calendar.getInstance();
     private JLabel jtNameSearch;
-    private JButton btnDelete;
     private JScrollPane scrollPane;
     private DefaultTableModel model = new DefaultTableModel() {
 
@@ -61,47 +52,57 @@ public class OptionsOverall extends Template {
             return false;
         }
     };
-    
+    private JTable table;
+    private JTextField jtSearch;
 
-    public OptionsOverall(Student student, Book book, Publisher publisher, Lending lending) {
-        super();
+    public OptionsOverall(Student student, Book book, Lending lending) {
         this.student = student;
         this.book = book;
-        this.publisher = publisher;
         this.lending = lending;
-        init();
     }
 
     public void init() {
-        frame.setTitle("Opções");
+        frameOverall = new JDialog();
+        frameOverall.setTitle("Empréstimo/Renovação/Devolução");
+        frameOverall.setModal(true);
+
+        Template.lookAndFeel();
+        initComponents();
+
+        frameOverall.setSize(800, 600);
+        frameOverall.setFocusable(true);
+        frameOverall.setLocationRelativeTo(null); //centraliza a tela 
+        frameOverall.setVisible(true);
+    }
+
+    private void initComponents() {
         tabbedPane = new JTabbedPane();
         //ImageIcon icon = createImageIcon("images/middle.gif");
 
         JComponent panel1 = new JPanel();
         lending(panel1);
         tabbedPane.addTab("Empréstimo", panel1);
-        
+
         JComponent panel2 = new JPanel();
         renovation(panel2);
-        tabbedPane.addTab("Renovação", null, panel2);
+        tabbedPane.addTab("Renovação", panel2);
 
         JComponent panel3 = new JPanel();
         devolution(panel3);
-        tabbedPane.addTab("Devolução", null, panel3);
+        tabbedPane.addTab("Devolução", panel3);
 
         JComponent panel4 = new JPanel();
         history(panel4);
-        tabbedPane.addTab("Histórico Aluno", null, panel4);
+        tabbedPane.addTab("Histórico Aluno", panel4);
 
-        frame.add(tabbedPane);
-        frame.setVisible(true);
+        frameOverall.add(tabbedPane);
     }
 
-    public JComponent lending(JComponent panel) {
+    private JComponent lending(JComponent panel) {
         JLabel lbCodeStudent = new JLabel(" CGM:");
         jtCodeStudent = new UJComboBox(fillComboBoxStudent());
         jtCodeStudent.setAutocompletar(true);
-        
+
         JLabel lbBook = new JLabel(" Livro:");
         jtBook = new UJComboBox(fillComboBoxBook());
         jtBook.setAutocompletar(true);
@@ -111,14 +112,12 @@ public class OptionsOverall extends Template {
         dateDeparture.setPreferredSize(new Dimension(130, 30));
 
         JLabel lbDateReturn = new JLabel(" Data Devolução: ");
-        dateCurrent.add(Calendar.DAY_OF_MONTH, 10);
+        dateCurrent.add(java.util.Calendar.DAY_OF_MONTH, 10);
         dateReturn = new JDateChooser(dateCurrent.getTime());
         dateReturn.setPreferredSize(new Dimension(130, 30));
 
         JButton btnSave = new JButton("Salvar");
         btnSave.addActionListener(new OptionsOverall.SaveActionListener());
-        btnBack = new JButton("Voltar");
-        btnBack.addActionListener(new OptionsOverall.BackActionListener());
 
         JPanel panel0 = new JPanel();
         panel0.add(lbCodeStudent);
@@ -142,7 +141,6 @@ public class OptionsOverall extends Template {
 
         JPanel panel4 = new JPanel();
         panel4.add(btnSave);
-        panel4.add(btnBack);
         panel4.setLayout(new GridLayout(1, 2));
 
         panel.add(panel0);
@@ -151,142 +149,8 @@ public class OptionsOverall extends Template {
         panel.add(panel3);
         panel.add(panel4);
         panel.setLayout(new FlowLayout(FlowLayout.CENTER, 1000, 40));
-        return panel;
-    }
-
-    public JComponent history(JComponent panel) {
-        jtSearch = new JTextField(35);
-
-        btnSearch = new JButton("OK");
-        btnSearch.addActionListener(new OptionsOverall.SearchActionListener());
-
-        panelSearch = new JPanel();
-        panelSearch.add(new JLabel("Busca: "));
-        panelSearch.add(jtSearch);
-        panelSearch.add(btnSearch);
-
-        jtNameStudent = new JLabel("Nome do Aluno: ");
-        jtNameSearch = new JLabel("");
-        JPanel panelName = new JPanel();
-        panelName.add(jtNameStudent);
-        panelName.add(jtNameSearch);
-        panelName.setLayout(new GridLayout(1, 1));
-
-        btnDelete = new JButton("Remover");
-        btnDelete.addActionListener(new OptionsOverall.DeleteActionListener());
-
-        btnBack = new JButton("Voltar");
-        btnBack.addActionListener(new OptionsOverall.BackActionListener());
-
-        table = new JTable(model);
-        //tabela.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-
-        model.addColumn("CGM");
-        //modelo.addColumn("Nome");
-        model.addColumn("Cod Livro");
-        model.addColumn("Data Saída");
-        model.addColumn("Data Devolução");
-        model.addColumn("Status");
-        scrollPane = new JScrollPane(table);
-        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-
-        frame.addComponentListener(new ComponentAdapter() {
-
-            @Override
-            public void componentResized(ComponentEvent e) {
-                scrollPane.setPreferredSize(new Dimension(frame.getWidth() - 100, frame.getHeight() - 150));
-            }
-
-            public void componentMoved(java.awt.event.ComponentEvent e) {
-                scrollPane.setPreferredSize(new Dimension(frame.getWidth() - 100, frame.getHeight() - 150));
-            }
-        });
-
-        panel.add(panelSearch);
-        panel.add(panelName);
-        panel.add(scrollPane);
-        panel.add(btnDelete);
-        panel.add(btnBack);
-        panel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 5));
 
         return panel;
-    }
-
-    private Boolean fillTable(String cgm) {
-        boolean fill = false;
-        try {
-            ResultSet rs = lending.selectViewLending(cgm);
-            while (rs.next()) {
-                fill = true;
-                jtNameSearch.setText(rs.getString("nome"));
-                model.addRow(new String[]{
-                            rs.getString("Alunos_CGM"),
-                            rs.getString("livro_idlivro"),
-                            rs.getString("dataSaida"),
-                            rs.getString("dataDevolucao"),
-                            rs.getString("status")});
-            }
-            if (fill) {
-                return true;
-            }
-
-        } catch (SQLException ex) {
-            Logger.getLogger(OptionsStudent.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return false;
-    }
-
-    private void devolution(JComponent panel) {
-        
-    }
-
-    private void renovation(JComponent panel) {
-        
-    }
-
-    private class SearchActionListener implements ActionListener {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            String cgm = jtSearch.getText();
-            if (!fillTable(cgm)) {
-                JOptionPane.showMessageDialog(frame, "Aluno não encontrado", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        }
-    }
-
-    private class DeleteActionListener implements ActionListener {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            int answer = JOptionPane.showConfirmDialog(frame, "Deseja remover esse registro?", "Remoção", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-            if (answer == JOptionPane.OK_OPTION) {
-                int row = table.getSelectedRow();
-                if (row >= 0) {
-                    try {
-                        String pattern = "dd/MM/yyyy";
-                        DateFormat df = new SimpleDateFormat(pattern);
-                        
-                        String codeStudent = table.getValueAt(row, 0).toString();
-                        
-                        String dtDeparture = df.format(new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy", Locale.UK).parse(table.getValueAt(row, 2).toString()));
-                        Date dateDeparture = df.parse(dtDeparture);
-
-                        String dtReturn = df.format(new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy", Locale.UK).parse(table.getValueAt(row, 3).toString()));
-                        Date dateReturn = df.parse(dtReturn);
-                        lending.deleteLending(codeStudent, dateDeparture, dateReturn);
-                        model.removeRow(row); //remove a linha
-
-                        JOptionPane.showMessageDialog(frame,
-                                "Registro excluído com sucesso!!!",
-                                "Remover", JOptionPane.INFORMATION_MESSAGE);
-                    } catch (ParseException ex) {
-                        Logger.getLogger(OptionsOverall.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-            }
-        }
     }
 
     public Vector fillComboBoxStudent() {
@@ -320,15 +184,6 @@ public class OptionsOverall extends Template {
         return null;
     }
 
-    private class BackActionListener implements ActionListener {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            frame.setVisible(false);
-            new MainGUI(student, publisher, book, lending);
-        }
-    }
-
     private class SaveActionListener implements ActionListener {
 
         @Override
@@ -341,12 +196,145 @@ public class OptionsOverall extends Template {
             if (!"--Escolha um Aluno--".equals(codeStudent) && !"--Escolha um Livro--".equals(codeBook) && !dtDeparture.isEmpty() && !dtReturn.isEmpty()) {
                 if (dateReturn.getDate().after(dateDeparture.getDate())) {
                     lending.insertLending(codeStudent, codeBook, dateDeparture.getDate(), dateReturn.getDate(), "Emprestimo");
-                    JOptionPane.showMessageDialog(frame, "Emprestimo Salvo com Sucesso!!!", "Emprestimo", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(frameOverall, "Emprestimo Salvo com Sucesso!!!", "Emprestimo", JOptionPane.INFORMATION_MESSAGE);
                 } else {
-                    JOptionPane.showMessageDialog(frame, "Data de Devolução deve ser DEPOIS da Data de Saída!", "Erro", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(frameOverall, "Data de Devolução deve ser DEPOIS da Data de Saída!", "Erro", JOptionPane.ERROR_MESSAGE);
                 }
             } else {
-                JOptionPane.showMessageDialog(frame, "Não Pode ter campos em Branco ou Não Selecionados!", "Erro", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(frameOverall, "Não Pode ter campos em Branco ou Não Selecionados!", "Erro", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private JComponent renovation(JComponent panel) {
+        return panel;
+
+    }
+
+    private JComponent devolution(JComponent panel) {
+        return panel;
+
+    }
+
+    private JComponent history(JComponent panel) {
+        jtSearch = new JTextField(35);
+
+        JButton btnSearch = new JButton("OK");
+        btnSearch.addActionListener(new OptionsOverall.SearchActionListener());
+
+        JPanel panelSearch = new JPanel();
+        panelSearch.add(new JLabel("Busca: "));
+        panelSearch.add(jtSearch);
+        panelSearch.add(btnSearch);
+
+        JLabel jtNameStudent = new JLabel("Nome do Aluno: ");
+        jtNameSearch = new JLabel("");
+        JPanel panelName = new JPanel();
+        panelName.add(jtNameStudent);
+        panelName.add(jtNameSearch);
+        panelName.setLayout(new GridLayout(1, 1));
+
+        JButton btnDelete = new JButton("Remover");
+        btnDelete.addActionListener(new OptionsOverall.DeleteActionListener());
+
+        if (table == null) {
+            table = new JTable(model);
+
+            model.addColumn("");
+            model.addColumn("CGM");
+            model.addColumn("Cod Livro");
+            model.addColumn("Data Saída");
+            model.addColumn("Data Devolução");
+            model.addColumn("Status");
+        }
+         
+        table.getColumnModel().getColumn(0).setPreferredWidth(0);
+        table.getTableHeader().getColumnModel().getColumn(0).setMaxWidth( 0 ); 
+        scrollPane = new JScrollPane(table);
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+
+        frameOverall.addComponentListener(new ComponentAdapter() {
+
+            @Override
+            public void componentResized(ComponentEvent e) {
+                scrollPane.setPreferredSize(new Dimension(frameOverall.getWidth() - 100, frameOverall.getHeight() - 150));
+            }
+
+            public void componentMoved(java.awt.event.ComponentEvent e) {
+                scrollPane.setPreferredSize(new Dimension(frameOverall.getWidth() - 100, frameOverall.getHeight() - 150));
+            }
+        });
+
+        panel.add(panelSearch);
+        panel.add(panelName);
+        panel.add(scrollPane);
+        panel.add(btnDelete);
+        panel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 5));
+
+        return panel;
+    }
+
+    private Boolean fillTable(String cgm) {
+        boolean fill = false;
+        clearTable();
+        try {
+            ResultSet rs = lending.selectViewLending(cgm);
+            while (rs.next()) {
+                fill = true;
+                jtNameSearch.setText(rs.getString("nome"));
+                model.addRow(new String[]{
+                            rs.getString("idemprestimo"),
+                            rs.getString("Alunos_CGM"),
+                            rs.getString("livro_idlivro"),
+                            rs.getString("dataSaida"),
+                            rs.getString("dataDevolucao"),
+                            rs.getString("status")});
+            }
+            if (fill) {
+                return true;
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(OptionsStudent.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
+    public void clearTable() {
+        model.setNumRows(0);
+    }
+
+    private class SearchActionListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String cgm = jtSearch.getText();
+            if (!fillTable(cgm)) {
+                JOptionPane.showMessageDialog(frameOverall, "Aluno não encontrado", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private class DeleteActionListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int answer = JOptionPane.showConfirmDialog(frameOverall, "Deseja remover esse registro?", "Remoção", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if (answer == JOptionPane.OK_OPTION) {
+                int row = table.getSelectedRow();
+                if (row >= 0) {
+
+                    String code = table.getValueAt(row, 0).toString();
+
+                    lending.deleteLending2(code);
+                    model.removeRow(row); //remove a linha
+
+                    JOptionPane.showMessageDialog(frameOverall,
+                            "Registro excluído com sucesso!!!",
+                            "Remover", JOptionPane.INFORMATION_MESSAGE);
+
+                }
             }
         }
     }

@@ -165,4 +165,16 @@ public class Book {
         }
         return null;
     }
+
+    public ResultSet selectBooks(String idLivro) {
+        try {
+            String sql = "SELECT l.*, e.nome AS editora FROM livros l, editoras e WHERE e.ideditora = l.editora_ideditora AND l.idlivro = '"+idLivro+"';";
+            ResultSet rs = this.database.stm.executeQuery(sql);
+
+            return rs;
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+        return null;
+    }
 }

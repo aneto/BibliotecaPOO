@@ -5,14 +5,8 @@ import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import model.Book;
-import model.Lending;
-import model.Publisher;
-import model.Student;
+import javax.swing.*;
+
 
 /**
  * Trabalho de .. Professor ..
@@ -20,51 +14,55 @@ import model.Student;
  * @author Alexandre
  * @version 1.0
  */
-public class MainGUI extends Template {
+public class MainGUI{
+    protected JFrame frameMain;
+    private final OptionsStudent os;
+    private final OptionsBook ob;
+    private final OptionsOverall oo;
+    private final Calendar c;
 
-    private Container container;
-    private JPanel panel;
-    private JButton btnOptionsStudent;
-    private JButton btnCadastreBook;
-    private JButton btnOptionsOverall;
-    private JButton btnPrint;
-    private JButton btnCalendar;
-    private Student student;
-    private Publisher publisher;
-    private Book book;
-    private Lending lending;
-
-    public MainGUI(Student student, Publisher publisher, Book book, Lending lending) {
-        super();
-        this.student = student;
-        this.book = book;
-        this.publisher = publisher;
-        this.lending = lending;
+    public MainGUI(OptionsStudent os, OptionsBook ob, OptionsOverall oo, Calendar c) {
+        this.os = os;
+        this.ob = ob;
+        this.oo = oo;
+        this.c = c;
         init();
     }
-
-    public void init() {
-        container = frame.getContentPane();
+    
+    public void init(){
+        frameMain = new JFrame("BibliotQAM - Gerenciamento da Biblioteca");
+        frameMain.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        Template.lookAndFeel();
+        initComponents();
+        
+        frameMain.pack();
+        frameMain.setSize(800, 600);
+        frameMain.setLocationRelativeTo(null); //centraliza a tela 
+        frameMain.setVisible(true);
+    }
+    
+    public void initComponents(){        
+        Container container = frameMain.getContentPane();
         container.setLayout(new BorderLayout());
 
         JLabel labelImage = new JLabel(new ImageIcon("img/biblioteca.png"));
-
-        btnOptionsStudent = new JButton("Cadastro Alunos");
+        JButton btnOptionsStudent = new JButton("Cadastro Alunos");
         btnOptionsStudent.addActionListener(new MainGUI.OptionsStudentActionListener());
-
-        btnCadastreBook = new JButton("Cadastro Livros");
+        
+        JButton btnCadastreBook = new JButton("Cadastro Livros");
         btnCadastreBook.addActionListener(new MainGUI.OptionsBookActionListener());
-
-        btnOptionsOverall = new JButton("Empréstimo - Renovação - Devolução");
+        
+        JButton btnOptionsOverall = new JButton("Empréstimo - Renovação - Devolução");
         btnOptionsOverall.addActionListener(new MainGUI.OptionsOverallActionListener());
-
-        btnPrint = new JButton("Imprimir");
+        
+        JButton btnPrint = new JButton("Imprimir");
         btnPrint.addActionListener(new MainGUI.PrintActionListener());
-
-        btnCalendar = new JButton("Calendário");
+        
+        JButton btnCalendar = new JButton("Calendário");
         btnCalendar.addActionListener(new MainGUI.CalendarActionListener());
-
-        panel = new JPanel();
+        
+        JPanel panel = new JPanel();
         panel.add(btnOptionsStudent);
         panel.add(btnCadastreBook);
         panel.add(btnOptionsOverall);
@@ -74,25 +72,21 @@ public class MainGUI extends Template {
 
         container.add(panel, BorderLayout.EAST);
         container.add(labelImage, BorderLayout.CENTER);
-
-        frame.setVisible(true);
     }
-
+    
     private class OptionsStudentActionListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            frame.setVisible(false);
-            new OptionsStudent(student, publisher, book, lending);
+            os.init();
         }
     }
-
+    
     private class OptionsBookActionListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            frame.setVisible(false);
-            new OptionsBook(student, publisher, book, lending);
+            ob.init();
         }
     }
 
@@ -100,8 +94,7 @@ public class MainGUI extends Template {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            frame.setVisible(false);
-            new OptionsOverall(student, book, publisher, lending);
+            oo.init();
         }
     }
 
@@ -117,8 +110,7 @@ public class MainGUI extends Template {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            frame.setVisible(false);
-            new Calendar();
+            c.init();
         }
     }
 }

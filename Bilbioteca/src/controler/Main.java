@@ -1,12 +1,15 @@
 package controler;
 
 import java.sql.SQLException;
-import model.*;
-import view.MainGUI;
+import model.Book;
+import model.Lending;
+import model.Publisher;
+import model.Student;
+import view.*;
 
 /**
- * Trabalho de .. Professor ..
- *
+ * Trabalho de ..
+ * Professor ..
  * @author Alexandre
  * @version 1.0
  */
@@ -22,7 +25,13 @@ public class Main {
         Publisher  publisher  = new Publisher(db);
         Book       book       = new Book(db, publisher);
         Lending    lending    = new Lending(db);
-
-        new MainGUI(student, publisher, book, lending);
+        
+        OptionsStudent os = new OptionsStudent(student);
+        OptionsBook ob = new OptionsBook(book, publisher);
+        OptionsOverall oo = new OptionsOverall(student, book, lending);
+        Calendar c = new Calendar();
+        
+        new MainGUI(os,ob,oo,c);
     }
+
 }

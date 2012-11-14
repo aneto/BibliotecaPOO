@@ -97,6 +97,18 @@ public class Student {
         return false;
     }
     
+    public ResultSet selectStudent(String codeStudent) {
+        try {
+            String sql = "SELECT * FROM alunos where cgm ='"+codeStudent+"';";
+            ResultSet rs = this.database.stm.executeQuery(sql);
+            
+            return rs;
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+        return null;
+    }
+    
     public void insertStudent(String codeStudent, String name, String serie, String filiation, String address, String phone){
         try {
             Class.forName("org.sqlite.JDBC");

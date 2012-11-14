@@ -1,9 +1,8 @@
 package view;
 
 import com.toedter.calendar.JCalendar;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
-import javax.swing.JLabel;
+import javax.swing.JDialog;
 import javax.swing.JPanel;
 
 /**
@@ -12,22 +11,31 @@ import javax.swing.JPanel;
  * @author Alexandre
  * @version 1.0
  */
-public class Calendar extends Template {
-
-    public Calendar() {
-        super();
-        init();
-        frame.setVisible(true);
-    }
+public class Calendar {
+    public JDialog frameCalendar;
     
     public void init(){
-        JCalendar calendar = new JCalendar();
-        calendar.setPreferredSize(new Dimension(frame.getWidth()-20, frame.getHeight()));
-        
+        frameCalendar = new JDialog();
+        frameCalendar.setTitle("Cadastrar Aluno");
+        frameCalendar.setModal(true);
+        frameCalendar.setSize(800, 600);
+
+        Template.lookAndFeel();
+        initComponents();
+
+        frameCalendar.setFocusable(true);
+        frameCalendar.setLocationRelativeTo(null); //centraliza a tela 
+        frameCalendar.setVisible(true);
+    }
+    
+    public void initComponents(){
+        final JCalendar calendar = new JCalendar();
+                
         JPanel panel = new JPanel();
         panel.add(calendar);
         panel.setLayout(new FlowLayout(FlowLayout.CENTER));
-        frame.add(panel);
+        
+        frameCalendar.add(panel);
     }
-   
+
 }
